@@ -36,7 +36,7 @@ class TaskBulter(Singleton):
         """Constructor"""
         
         self._threads_update_interval = threads_update_interval
-        
+        self._closed = False
         self._initial_deamon_threads()
     
     #----------------------------------------------------------------------
@@ -62,14 +62,14 @@ class TaskBulter(Singleton):
     #----------------------------------------------------------------------
     def _update_tasks_status(self):
         """"""
-        pprint('daemon threads started')
-        while True:
+        #pprint('daemon threads started')
+        while self._closed == False:
             for i in self._tasks_table.items():
                 pipe = i[1]['status_monitor_pipe']
                 if self._tasks_table[i[0]]['process_instance'].exitcode == None:
                     if pipe.poll():
                         self._tasks_status[i[0]] = pipe.recv()
-                        pprint(self._tasks_status)
+                        #pprint(self._tasks_status)
                     else:
                         pass
                     sleep(self._threads_update_interval/2)
@@ -105,12 +105,12 @@ class TaskBulter(Singleton):
                                    threads_update_interval=cls._threads_update_interval)
         
         cls._tasks_table[id]['process_instance'] = task_process
-        
+        task_process.daemon = True
         task_process.start()
     
     
     #----------------------------------------------------------------------
-    def get_task_status(self):
+    def get_tasks_status(self):
         """"""
         return self._tasks_status.copy()
     
@@ -137,7 +137,11 @@ class TaskBulter(Singleton):
             assert isinstance(_, ProcessTask)
             _.terminate()
         
-    
+    #----------------------------------------------------------------------
+    def close(self):
+        """"""
+        self._closed = True
+        
 ########################################################################
 class TaskBulterTest(unittest.case.TestCase):
     """"""

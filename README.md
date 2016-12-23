@@ -163,3 +163,44 @@ Contractor 的接口基本和 ThreadPool 相同，但是不同的是，它的每
 
 ## 多进程管理：
 
+在 Python 中，经常要遇到的问题是，线程没有办法强行结束，为什么呢？（为什么 Python 的线程没有提供 kill 或者是 stop 或者 truncate 或者 abort 方法？怎么强行停止一个 Python 线程？）答案在这里 [StackOverFlow 关于杀死 Python 线程的回答](http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python)。  
+为什么要杀死一个线程呢？（线程那么可爱怎么可以杀死他），其实 Python 是因为共享资源等原因，故意不提供线程的结束方法的。  
+
+但是有些时候我们还是想强行结束某一个任务，但是进程（multiprocessing） 提供了比较好的办法。难道我们每一个任务都要使用 Process？（Process 是进程，Thread 是线程，一般来说进程的开销要比 Thread 大，虽然 Process 可以支持多核执行，但是过多的 Process 并不见得有优势）。那么比较理想的方式其实就是 Process + Thread 来执行你的任务。
+
+那么想要强行结束某一项任务又不违和，就去使用进程吧！  
+
+### TaskBulter 控制&监视你的进程与线程
+
+Bulter 的意思是男管家，当然是用来管理你的任务的，通过什么管理呢？简单来说就是：如果你使用了 TaskBulter 来执行你的任务（任务事先写好-最好使用多线程而不是多进程），你的每一个任务都会专门启动一个进程（Process），在这个进程内，你可以运行多个线程（使用 ThreadPool，或者 Contractor）。TaskBulter 可以监视你的任务执行情况，和任务内的线程的生存状况，如果任务内关键的线程已经挂了，任务还是没有办法自己退出，你就可以调用 TaskBulter 来强行结束掉你的任务，同样的如果只是想了解各个线程的运行状况，TaskBulter 也提供了监控功能。  
+
+当然，性能上并不占优势，但是可以在一定程度上保证稳重与优雅。  
+
+#### 示例代码
+
+	from g3ar import TaskBulter
+
+	def tasktest(arg1):
+	    print(arg1)
+	    def runforever():
+	        while True:
+	            pass
+	    
+	    pool = ThreadPool()
+	    pool.start()
+	    pool.feed(runforever)
+	    pool.feed(runforever)
+	    pool.feed(runforever)
+	    while True:
+	        pass
+
+    bulter = TaskBulter(threads_update_interval=0.3)
+        
+    bulter.start_task(id='tasktest', target=tasktest, args=(5,))
+    task = bulter.get_task_by_id('tasktest')
+    print task
+    #print bulter.get_task_status()
+    sleep(2)
+    bulter.destory_task(task)
+    #bulter.close()
+

@@ -158,6 +158,7 @@ class Pool(object):
         """"""
         #pprint('start new labor')
         _tmp_labor = LaborThread(result_queue=self._result_queue, master=self)
+        _tmp_labor.daemon = True
         _tmp_labor.start()
         self._current_thread.append(_tmp_labor)
         

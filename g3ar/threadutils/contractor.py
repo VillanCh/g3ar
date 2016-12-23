@@ -18,7 +18,9 @@ import traceback
 #----------------------------------------------------------------------
 def start_thread(func, *args, **kwargs):
     """"""
-    Thread(target=func, args=args, kwargs=kwargs).start()
+    ret = Thread(target=func, args=args, kwargs=kwargs)
+    ret.daemon = True
+    ret.start()
 
 
 ########################################################################
@@ -69,7 +71,9 @@ class Contractor(object):
 
     def start(self):
         """"""
-        Thread(target=self._run).start()
+        ret = Thread(target=self._run)
+        ret.daemon = True
+        ret.start()
 
         return self.result_queue
 
@@ -87,7 +91,9 @@ class Contractor(object):
         self._current_thread_count = self._current_thread_count + 1
         try:
 
-            Thread(target=self._worker, args=(task,)).start()
+            ret = Thread(target=self._worker, args=(task,))
+            ret.daemon = True
+            ret.start()
         except TypeError:
             self._current_thread_count = self._current_thread_count - 1
 

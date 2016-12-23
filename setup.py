@@ -19,7 +19,7 @@ packages = [
 
 requires = []
 
-version = '0.0.1alpha3'
+version = '0.0.5'
 
 #
 # LOAD README.md

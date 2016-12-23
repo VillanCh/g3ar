@@ -10,12 +10,28 @@ import unittest
 
 from time import sleep
 from threadutils import thread_pool, contractor
+from taskbulter import task_bulter
 from Queue import Empty
 ThreadPool = thread_pool.Pool
 Contractor = contractor.Contractor
+TaskBulter = task_bulter.TaskBulter
+
+def tasktest(arg1):
+    print(arg1)
+    def runforever():
+        while True:
+            pass
+    
+    pool = ThreadPool()
+    pool.start()
+    pool.feed(runforever)
+    pool.feed(runforever)
+    pool.feed(runforever)
+    while True:
+        pass
 
 ########################################################################
-class G3arSubModuleTest(unittest.case.TestCase):
+class G3arThreadUtilsTest(unittest.case.TestCase):
     """"""
 
     #----------------------------------------------------------------------
@@ -101,5 +117,23 @@ class G3arSubModuleTest(unittest.case.TestCase):
         
 
 
+########################################################################
+class G3arTaskBulterTest(unittest.case.TestCase):
+    """"""
+
+    #----------------------------------------------------------------------
+    def test_taskbulter(self):
+        """Constructor"""
+        bulter = TaskBulter(threads_update_interval=0.1)
+            
+        bulter.start_task(id='tasktest', target=tasktest, args=(5,))
+        task = bulter.get_task_by_id('tasktest')
+        print task
+        sleep(2)
+        print bulter.get_tasks_status()
+        bulter.destory_task(task)
+        #bulter.close()
+    
+    
 if __name__ == '__main__':
     unittest.main()
