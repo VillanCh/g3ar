@@ -6,8 +6,29 @@ Home-page: https://github.com/VillanCh/g3ar
 Author: v1ll4n/VillanCh
 Author-email: v1ll4n@villanch.top
 License: BSD 2-Clause License
-Description: # g3ar
-        渗透测试编程工具包
+Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
+        
+        
+        ## 功能概述
+        
+        1. 多线程与多进程管理：
+        	* 线程池与多线程调用极简化
+        	* 异步
+        	* Taskbulter 对进程内的线程监控与管理
+        * 爆破用字典管理：
+        	* 支持任意大小的字典读取（大字典不再发愁）
+        	* 进度保存
+        	* 获取当前进行进度
+        * 日志记录器：
+        	* 日志管理极简化
+        	* 装饰器接口
+        	* 自动追踪函数，日志记录函数的调用，Trace，和异常情况
+        
+        
+        ## 现有模块：
+        
+        ### ThreadPool
+        线程池模块可以有效减少程序在开启和结束线程上的开销，达到批量执行任务并且，同时，该模块以异步方式工作，通过一个结果队列来输出结果，方便你在运行的过程中完成其他的工作，也不必烦恼找不到办法拿到多线程执行的结果。  
         
         
         ###Version: 0.0.1alpha3
