@@ -1,5 +1,6 @@
 setup.py
 g3ar/__init__.py
+g3ar/test.py
 g3ar.egg-info/PKG-INFO
 g3ar.egg-info/SOURCES.txt
 g3ar.egg-info/dependency_links.txt

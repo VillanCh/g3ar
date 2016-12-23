@@ -8,16 +8,19 @@
 import uuid
 import time
 import unittest
-from Queue import Queue
+from Queue import Queue, Empty
 import threading
 from threading import Thread
 import inspect
+import traceback
 
 
 #----------------------------------------------------------------------
 def start_thread(func, *args, **kwargs):
     """"""
-    Thread(target=func, args=args, kwargs=kwargs).start()
+    ret = Thread(target=func, args=args, kwargs=kwargs)
+    ret.daemon = True
+    ret.start()
 
 
 ########################################################################
@@ -31,37 +34,46 @@ class Contractor(object):
         self.task_list = []
         self.result_queue = Queue()
 
-        self.signal_name = self._uuid1_str()
-
         self.lock = threading.Lock()
 
         self.thread_max = thread_max
-        self.current_thread_count = 0
+        self._current_thread_count = 0
+        
+        self._executed_task_count = 0
+        self._task_count = 0
 
     def _uuid1_str(self):
         '''Returns: random UUID tag '''
         return str(uuid.uuid1())
 
-    def add_task(self, func, *args, **argv):
+    #----------------------------------------------------------------------
+    def feed(self, target_func, *vargs, **kwargs):
+        """"""
+        self.add_task(target_func, *vargs, **kwargs)
+        
+    def add_task(self, target_func, *args, **argv):
         '''Add task to Pool and wait to exec
 
         Params:
-            func : A callable obj, the entity of the current task
-            args : the args of [func]
-            argv : the argv of [func]
+            target_func : A callable obj, the entity of the current task
+            args : the args of [target_func]
+            argv : the argv of [target_func]
         '''
-        assert callable(func), '[!] Function can \'t be called'
+        assert callable(target_func), '[!] Function can \'t be called'
 
         ret = {}
-        ret['func'] = func
+        ret['func'] = target_func
         ret['args'] = args
         ret['argv'] = argv
-        ret['uuid'] = self.signal_name
+        #ret['uuid'] = self.signal_name
+        self._task_count = self._task_count + 1
         self.task_list.append(ret)
 
-    def run(self):
+    def start(self):
         """"""
-        Thread(target=self._run).start()
+        ret = Thread(target=self._run)
+        ret.daemon = True
+        ret.start()
 
         return self.result_queue
 
@@ -70,18 +82,20 @@ class Contractor(object):
         """"""
         for i in self.task_list:
             #print self.current_thread_count
-            while self.thread_max <= self.current_thread_count:
+            while self.thread_max <= self._current_thread_count:
                 time.sleep(0.3)
             self._start_task(i)        
 
     def _start_task(self, task):
         """"""
-        self.current_thread_count = self.current_thread_count + 1
+        self._current_thread_count = self._current_thread_count + 1
         try:
 
-            Thread(target=self._worker, args=(task,)).start()
+            ret = Thread(target=self._worker, args=(task,))
+            ret.daemon = True
+            ret.start()
         except TypeError:
-            self.current_thread_count = self.current_thread_count - 1
+            self._current_thread_count = self._current_thread_count - 1
 
     def _worker(self, dictobj):
         """"""
@@ -89,9 +103,14 @@ class Contractor(object):
         args = dictobj['args']
         argv = dictobj['argv']
 
-        result = func(*args, **argv)
-
+        try:
+            result = func(*args, **argv)
+        except Exception, e:
+            #print 'ecp occured'
+            result = tuple([e, traceback.extract_stack()])
+        
         self.lock.acquire()
+        self._executed_task_count = self._executed_task_count + 1
         self._add_result_to_queue(result=result)
         self.lock.release()
 
@@ -100,7 +119,57 @@ class Contractor(object):
         assert kw.has_key('result'), '[!] Result Error!'
 
         self.result_queue.put(kw['result']) 
-        self.current_thread_count = self.current_thread_count - 1
+        self._current_thread_count = self._current_thread_count - 1
+        
+    #----------------------------------------------------------------------
+    def get_result_queue(self):
+        """"""
+        return self.result_queue
+
+    #----------------------------------------------------------------------
+    def get_task_list(self):
+        """"""
+        self.task_list
+    
+    #----------------------------------------------------------------------
+    def get_result_generator(self):
+        """"""
+        while True:
+            try:
+                ret = self.result_queue.get(timeout=1)
+                yield ret
+            except Empty:
+                if self._task_count == self._executed_task_count:
+                    break
+                else:
+                    pass        
+    
+    #----------------------------------------------------------------------
+    @property
+    def task_count(self):
+        """"""
+        return self._task_count
+    
+    #----------------------------------------------------------------------
+    @property
+    def executed_task_count(self):
+        """"""
+        return self._executed_task_count
+    
+    #----------------------------------------------------------------------
+    @property    
+    def percent(self):
+        """"""
+        return float(self._task_count)/float(self._executed_task_count)
+    
+    #----------------------------------------------------------------------
+    @property
+    def current_thread_count(self):
+        """"""
+        return self._current_thread_count
+        
+        
+        
 
 
 class UtilsTest(unittest.case.TestCase):
@@ -124,8 +193,8 @@ class UtilsTest(unittest.case.TestCase):
         pool = Contractor()
         pool.add_task(demo_task, 7)
         pool.add_task(demo_task, 3)
-        q = pool.run()
-        print pool.current_thread_count
+        q = pool.start()
+        print pool._current_thread_count
         self.assertIsInstance(q, Queue)
 
         r = q.get()
@@ -135,7 +204,7 @@ class UtilsTest(unittest.case.TestCase):
         print r
         self.assertIsInstance(r, str)
 
-        print pool.current_thread_count
+        print pool._current_thread_count
 
 
 if __name__ == '__main__':

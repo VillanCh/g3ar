@@ -13,8 +13,10 @@ from time import sleep
 from Queue import Full, Empty, Queue
 #from random import choice
 #from traceback import format_exc
-from threading import Thread
+from threading import Thread, Lock
 #from multiprocessing import Process, Lock
+from uuid import uuid1
+
 
 ########################################################################
 class TaskError(Exception):
@@ -26,15 +28,20 @@ class LaborThread(Thread):
     """"""
     
     #----------------------------------------------------------------------
-    def __init__(self, result_queue, *args, **kargs):
+    def __init__(self, result_queue, master, *args, **kargs):
         """Constructor"""
-        Thread.__init__(self, *args, **kargs)
+        Thread.__init__(self, name='ThreadPool-Labor-'+uuid1().hex,
+                        *args, **kargs)
+        
+        self._master = master
         
         self._result_queue = result_queue
     
         self._startworkingflag_ = True
         
         self._task_queue = Queue(1)
+        
+        self._count_lock = Lock()
     
     #----------------------------------------------------------------------
     def get_result_queue(self):
@@ -80,7 +87,11 @@ class LaborThread(Thread):
                     exception_i = (str(type(e)), str(e))
                     result['exception'] = exception_i
                     self._result_queue.put(result)
-
+                
+                self._count_lock.acquire()
+                self._master._executed_task_count = \
+                    self._master._executed_task_count + 1
+                self._count_lock.release()
             except Empty:
                 pass
     
@@ -129,6 +140,9 @@ class Pool(object):
         
         self.is_alive = True
         
+        self._executed_task_count = 0
+        self._task_count = 0
+        
     #----------------------------------------------------------------------
     def _restart_thread_daemon(self):
         """"""
@@ -143,7 +157,8 @@ class Pool(object):
     def _start_new_labor(self):
         """"""
         #pprint('start new labor')
-        _tmp_labor = LaborThread(result_queue=self._result_queue)
+        _tmp_labor = LaborThread(result_queue=self._result_queue, master=self)
+        _tmp_labor.daemon = True
         _tmp_labor.start()
         self._current_thread.append(_tmp_labor)
         
@@ -151,6 +166,7 @@ class Pool(object):
     def feed(self, target_func, *vargs, **kwargs):
         """"""
         self._task_queue.put(tuple([target_func, vargs, kwargs]))
+        self._task_count = self._task_count + 1
         
     #----------------------------------------------------------------------
     def _dispatcher(self):
@@ -208,6 +224,39 @@ class Pool(object):
     def get_task_queue(self):
         """"""
         return self._task_queue
+    
+    #----------------------------------------------------------------------
+    def get_result_generator(self):
+        """"""
+        while True:
+            try:
+                ret = self._result_queue.get(timeout=1)
+                yield ret
+            except Empty:
+                if self._task_count == self._executed_task_count:
+                    break
+                else:
+                    pass
+    
+    #----------------------------------------------------------------------
+    @property    
+    def task_count(self):
+        """The amount of tasks"""
+        return self._task_count
+    
+    #----------------------------------------------------------------------
+    @property    
+    def executed_task_count(self):
+        """"""
+        return self._executed_task_count
+    
+    #----------------------------------------------------------------------
+    @property    
+    def percent(self):
+        """"""
+        return float(self._executed_task_count)/float(self._task_count)
+        
+        
         
         
                     
@@ -221,23 +270,6 @@ class PoolTest(unittest.case.TestCase):
     def runTest(self):
         """Constructor"""
         self.test_laborprocess()
-
-    #----------------------------------------------------------------------
-    def test_laborprocess(self):
-        """"""
-        def func(arg1):
-            print 'function called'
-            return arg1
-        
-        rq = Queue()
-        lp = LaborThread(result_queue=rq)
-        lp.daemon = True
-        lp.start()
-        lp.feed(func, 1234)
-        sleep(3)
-        _ = lp.get_result_queue().get()
-        self.assertTrue(_['state'])
-        self.assertEqual(_['result'], 1234)
         
     #----------------------------------------------------------------------
     def test_pool(self):
