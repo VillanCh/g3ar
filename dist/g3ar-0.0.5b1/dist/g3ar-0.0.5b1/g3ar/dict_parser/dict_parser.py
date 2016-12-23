@@ -10,7 +10,7 @@ import shelve
 import unittest
 import os
 from pprint import pprint
-from hashlib import md5
+from md5 import md5
 
 SESSION_TABLE_FILE = 'sessions.dat'
 DEFAULT_SESSION_ID = 'default'

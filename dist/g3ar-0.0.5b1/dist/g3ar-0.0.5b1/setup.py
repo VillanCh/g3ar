@@ -19,25 +19,18 @@ packages = [
 
 requires = []
 
-version = '0.0.6'
+version = '0.0.5b1'
 
 #
 # LOAD README.md
 #
-try:
-    readme = None
-    with copen('README.md', encoding='utf-8') as f:
-        readme = f.read()
-        
-    history = None
-    with copen('HISTORY.md', encoding='utf-8') as f:
-        history = f.read()
-except:
-    readme = 'Python Coding Toolkit for Pentester.' + \
-        '\nGithub: https://github.com/VillanCh/g3ar' + \
-        '\nREADME.md: https://github.com/VillanCh/g3ar/blob/master/README.md\n\n'
-    history = 'https://github.com/VillanCh/g3ar/blob/master/HISTORY.md'
+readme = None
+with copen('README.md', encoding='utf-8') as f:
+    readme = f.read()
     
+history = None
+with copen('HISTORY.md', encoding='utf-8') as f:
+    history = f.read()
     
 setup(
     name='g3ar',

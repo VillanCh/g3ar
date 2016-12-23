@@ -23,12 +23,16 @@ class DictParserTest(unittest.case.TestCase):
         
         count = 0
         for i in dictparse:
-            #pprint(i)
+            pprint(i)
             count = count + 1
-            if count > 100*512:
+            if count > 10:
                 break
             
         dictparse = DictParser(filename='dir.txt', do_continue=True)
+        retcollect = dictparse.get_next_collection(num=200)
+        
+        for i in retcollect:
+            pprint(i)
         pprint('='*64)
     
     #----------------------------------------------------------------------
@@ -37,7 +41,7 @@ class DictParserTest(unittest.case.TestCase):
         
         pprint('='*64)
         pprint('Test get a collection by dictparser')
-        dictparse = DictParser(filename='dir.txt', do_continue=True)
+        dictparse = DictParser(filename='dir.txt', do_continue=False)
         retcollect = dictparse.get_next_collection(num=200)
         
         for i in retcollect:
@@ -49,10 +53,10 @@ class DictParserTest(unittest.case.TestCase):
         """"""
         pprint('='*64)
         pprint('Test get basic information of dictfile')
-        dictparse = DictParser(filename='dir.txt', do_continue=True)
+        dictparse = DictParser(filename='dir.txt', do_continue=False)
         pprint("Current Pos: %d" % dictparse.get_current_pos())
         pprint("Totol SIZE: %d" % dictparse.get_total_size())
-        dictparse.get_fp().readlines()
+        dictparse.get_fp().readline()
         pprint("Current Pos: %d" % dictparse.get_current_pos())
         pprint("Totol SIZE: %d" % dictparse.get_total_size())        
         pprint('='*64)

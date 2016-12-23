@@ -73,7 +73,14 @@ class Decologger(object):
     #----------------------------------------------------------------------
     def __init__(self, name, root_log_level='warning', 
                  basedir='decolog/', email_config={},):
-        """Constructor"""
+        """Constructor
+        
+        Params:
+            name: :str: the name of decologger
+            root_log_level: :str: root logger level [debug/info/warning/error/critical]
+            basedir: :str: the base path for all logs
+            email_config: :str: Not Finished (If the crucial event happend, email to admin)
+        """
         self._name = name
         self._email_config = email_config
         # set basedir

@@ -180,12 +180,16 @@ Bulter 的意思是男管家，当然是用来管理你的任务的，通过什�
 
 	from g3ar import TaskBulter
 
+	#
+	# 定义任务函数
+	#
 	def tasktest(arg1):
 	    print(arg1)
 	    def runforever():
 	        while True:
 	            pass
-	    
+
+	    # 在任务函数中使用线程池
 	    pool = ThreadPool()
 	    pool.start()
 	    pool.feed(runforever)
@@ -194,13 +198,196 @@ Bulter 的意思是男管家，当然是用来管理你的任务的，通过什�
 	    while True:
 	        pass
 
+	#
+	# 创建任务管理器
+    # threads_update_interval 为监控信息更新频率
+    #
     bulter = TaskBulter(threads_update_interval=0.3)
-        
+    
+    #
+    # 启动一个进程去执行任务，*args， **vargs 为启动参数
+    #    
     bulter.start_task(id='tasktest', target=tasktest, args=(5,))
     task = bulter.get_task_by_id('tasktest')
     print task
-    #print bulter.get_task_status()
+    # 获取所有进程的任务中的线程的任务函数
+    print bulter.get_tasks_status()
     sleep(2)
+    # 强行结束任务
     bulter.destory_task(task)
+	# 由于线程是守护线程，close 提前关闭可以节约一些 CPU 资源    
     #bulter.close()
 
+####代码说明：
+
+略
+
+##DictParser：优雅读取大字典
+
+在渗透测试中经常需要对文件进行操作，如果一次加载整个的大文件会造成内存爆炸。  
+比较优雅的方式读取字典文件就是使用文件指针读取，同时保存指针进度来保存进度，指针位置/文件大小可以作为字典读取百分比（而不是行数）。  
+DictParser 这个模块就是专门为了解决这个问题。
+
+### Quick Look
+
+
+##### 获取文件描述符进行字典读取操作
+	from g3ar import DictParser
+	#
+    # 创建字典解析器
+    #
+    dictparse = DictParser(filename='dir.txt',  session_id='default', do_continue=True)
+    print("Current Pos: %d" % dictparse.get_current_pos())
+    print("Totol SIZE: %d" % dictparse.get_total_size())
+	# 使用文件描述符进行读取
+    dictparse.get_fp().readlines()
+    print("Current Pos: %d" % dictparse.get_current_pos())
+    print("Totol SIZE: %d" % dictparse.get_total_size())        
+
+##### 迭代器用法：
+
+	# 创建字典解析器
+    dictparse = DictParser(filename='dir.txt', session_id='default', do_continue=False)
+    
+    count = 0
+    # 迭代器生成
+    for i in dictparse:
+        #pprint(i)
+        count = count + 1
+        if count > 100*512:
+            break
+##### 获取数据集的做法
+    # 继续上一次的字典进行爆破
+    dictparse = DictParser(filename='dir.txt', session_id='default', do_continue=True)
+
+	# 一次获取若干条数据 num=200 为一次获取 200 条数据
+    retcollect = dictparse.get_next_collection(num=200)
+    
+    for i in retcollect:
+        pprint(i)
+### 其他常用方法简要说明：
+
+#### 构造器
+def \_\_init\_\_(self, filename, session_id='default', do_continue=False, session_data_file='sessions.dat'):
+
+* filename :str: 字典文件名
+* session_id :str: Session ID 用于保存进度
+* do_continue :bool: 是否继续上一次的运行？
+* session_data_file :str: 保存 session 临时文件的文件名
+* 
+#### DictParser: 常用方法
+* def save(self): 与 def force_save(self): 为强制保存进度
+* def get_next_collection(self, num=200): 获取一个固定数量（num=200）的 Payload 集合。
+* def get_current_pos(self): 获取当前文件指针的位置
+* def get_total_size(self): 获取文件总大小
+* def get_fp(self): 获取文件描述符 
+
+## 更简单的日志
+
+日志只能输出在指定位置？或者很烦每次都要在 try 与 catch 中写日志记录？  
+来试试装饰器版的日志记录吧！
+
+### Quick Look
+
+    decologger = DecoLogger(name='testdecologger')
+    
+	# 使用日志装饰器装饰 fun 函数
+    @decologger.middle_level
+    def fun():
+        print 'Function Called'
+    
+    
+    class A:
+        #----------------------------------------------------------------------
+        def __init__(self):
+            """"""
+        
+        #----------------------------------------------------------------------
+		# 使用日志装饰器装饰类中的方法
+        @decologger.high_level
+        def B(self):
+            """"""
+    A().B()
+    A().B()
+    A().B()
+    A().B()
+    fun()
+    fun()
+    fun()
+    fun()
+    
+    decologger.info('INFO MESSAGE')
+    decologger.debug('DEBUG MESSAGE')
+    decologger.warning('WARNING')
+    decologger.error('HHHHHHHH')
+    decologger.critical('This is Critical Message') 
+
+---
+生成日志结构：  
+![](http://i.imgur.com/coBCNq5.png)
+
+	2016-12-23 23:50:34,316-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,316-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,318-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,318-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,318-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,318-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,319-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,319-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,319-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,319-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,321-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,321-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,321-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,321-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,322-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,322-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,322-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,322-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,323-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,323-testdecologger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,323-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,323-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,325-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,325-testdecologger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,325-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,325-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	Function Called
+	2016-12-23 23:50:34,325-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,325-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	Function Called
+	2016-12-23 23:50:34,326-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,326-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	Function Called
+	2016-12-23 23:50:34,328-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,328-testdecologger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:fun] Be Called -- [process_id:12452][thread_name:MainThread-id:2796]
+	Function Called
+	2016-12-23 23:50:34,335-testdecologger.info-INFO: INFO MESSAGE -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,335-testdecologger.info-INFO: INFO MESSAGE -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,335-testdecologger.debug-DEBUG: DEBUG MESSAGE -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,335-testdecologger.debug-DEBUG: DEBUG MESSAGE -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,335-testdecologger.warning-WARNING: WARNING -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,335-testdecologger.warning-WARNING: WARNING -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,336-testdecologger.error-ERROR: HHHHHHHH -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,336-testdecologger.error-ERROR: HHHHHHHH -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,336-testdecologger.critical-CRITICAL: This is Critical Message -- [process_id:12452][thread_name:MainThread-id:2796]
+	2016-12-23 23:50:34,336-testdecologger.critical-CRITICAL: This is Critical Message -- [process_id:12452][thread_name:MainThread-id:2796]
+	.
+
+### 说明
+针对关键性的函数，需要追踪调用的时候，就修饰一下吧？
+
+当然你可以在创建日志装饰器的时候配置一下，配置成你想要的样子：
+
+    def __init__(self, name, root_log_level='warning', 
+                 basedir='decolog/', email_config={},):
+        """Constructor
+        
+        Params:
+            name: :str: the name of decologger
+            root_log_level: :str: root logger level [debug/info/warning/error/critical]
+            basedir: :str: the base path for all logs
+            email_config: :str: Not Finished (If the crucial event happend, email to admin)
+        """
+
+EMAIL_CONFIG 应该在下一个版本会发布~
