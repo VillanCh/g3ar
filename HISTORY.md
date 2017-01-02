@@ -1,3 +1,15 @@
+###Version: 0.0.7b1
+Add print_utils (print_bar)
+
+###Version: 0.0.6b4
+Fix bugs
+
+###Version: 0.0.6b1
+Add utils to support some useful module(ip calc, python-ping(root needed!))
+
+###Version: 0.0.6
+4 Useful Class Added and completed
+
 ###Version: 0.0.5b1
 Add README.md & HISTORY.md in setup()
 

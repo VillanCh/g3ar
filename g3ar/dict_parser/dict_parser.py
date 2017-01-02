@@ -133,6 +133,12 @@ class DictParser():
     def get_fp(self):
         """Get the fp(Dangerous)"""
         return self._dict_file_p
+    
+    #----------------------------------------------------------------------
+    def reset(self):
+        """"""
+        self._dict_file_p.seek(0)
+        
         
         
 

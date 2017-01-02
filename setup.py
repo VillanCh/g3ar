@@ -9,17 +9,11 @@
 from codecs import open as copen
 from setuptools import setup, find_packages
 
-packages = [
-    'g3ar',
-    'g3ar.decologger',
-    'g3ar.dict_parser',
-    'g3ar.taskbulter',
-    'g3ar.threadutils',
-]
+packages = find_packages()
 
-requires = []
+requires = ['IPy', 'ipwhois', 'colorama']
 
-version = '0.0.6'
+version = '0.0.7b2.4'
 
 #
 # LOAD README.md

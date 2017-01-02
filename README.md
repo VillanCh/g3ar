@@ -16,6 +16,26 @@
 	* 装饰器接口
 	* 自动追踪函数，日志记录函数的调用，Trace，和异常情况
 
+## 依赖
+
+	Python 2.7
+	ipwhois
+
+## 安装
+
+### By pip
+
+	pip install g3ar
+
+### By easy_install
+    
+    easy_install g3ar
+
+### By Github：
+
+	git clone https://github.com/VillanCh/g3ar
+    cd g3ar
+	python setup.py install
 
 ## 多线程管理：
 
@@ -390,4 +410,31 @@ def \_\_init\_\_(self, filename, session_id='default', do_continue=False, sessio
             email_config: :str: Not Finished (If the crucial event happend, email to admin)
         """
 
-EMAIL_CONFIG 应该在下一个版本会发布~
+EMAIL_CONFIG 应该在下一个大版本会发布~
+
+## g3ar.utils - 帮助你解决一些蛋疼的事情？
+
+### ip_calc_utils
+
+### inspect_utils
+快速方便的自省！
+
+### print_utils
+帮助你快速打印一些小玩意~（比如加颜色？比如打印一个分隔行？）
+
+from g3ar.utils.print_utils import print_bar
+
+print_bar()
+
+
+### pyping
+没错 pyping 就是一个 python 实现的 ping 程序，不过需要你提供 root 权限（管理员权限）才可以运行。  
+	
+	from g3ar.utils.pyping import pyping
+	
+	pyping('45.78.6.65')
+
+结果是：
+
+	{'ping': {'delay': 0, 'alive': False}}
+

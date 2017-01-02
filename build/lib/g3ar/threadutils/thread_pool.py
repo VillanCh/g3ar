@@ -28,12 +28,14 @@ class LaborThread(Thread):
     """"""
     
     #----------------------------------------------------------------------
-    def __init__(self, result_queue, master, *args, **kargs):
+    def __init__(self, result_queue, master, clean_mod=True, *args, **kargs):
         """Constructor"""
         Thread.__init__(self, name='ThreadPool-Labor-'+uuid1().hex,
                         *args, **kargs)
         
         self._master = master
+        
+        self._clean_mod = clean_mod
         
         self._result_queue = result_queue
     
@@ -80,12 +82,18 @@ class LaborThread(Thread):
                     ret = self._process_task(_task)
                     result['state'] = True
                     result['result'] = ret
-                    self._result_queue.put(result)                    
+                    #self._result_queue.put(result)                    
                 except Exception, e:
                     result['state'] = False
                     result['result'] = None
                     exception_i = (str(type(e)), str(e))
                     result['exception'] = exception_i
+                finally:
+                    if self._clean_mod:
+                        _result = {}
+                        _result['state'] = result['state']
+                        _result['result'] = result['result']
+                        result = _result
                     self._result_queue.put(result)
                 
                 self._count_lock.acquire()
@@ -127,13 +135,13 @@ class Pool(object):
     """"""
 
     #----------------------------------------------------------------------
-    def __init__(self, thread_max=30):
+    def __init__(self, thread_max=30, clean_mod=True):
         """Constructor"""
         self.thread_max = thread_max
         
         self._current_thread = []
         self._daemon_thread = []
-        
+        self._clean_mod = clean_mod
         self._result_queue = Queue()
         
         self._task_queue = Queue()
@@ -157,7 +165,8 @@ class Pool(object):
     def _start_new_labor(self):
         """"""
         #pprint('start new labor')
-        _tmp_labor = LaborThread(result_queue=self._result_queue, master=self)
+        _tmp_labor = LaborThread(result_queue=self._result_queue, master=self,
+                                 clean_mod=self._clean_mod)
         _tmp_labor.daemon = True
         _tmp_labor.start()
         self._current_thread.append(_tmp_labor)

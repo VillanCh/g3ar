@@ -58,6 +58,10 @@ class DictParserTest(unittest.case.TestCase):
         pprint("Totol SIZE: %d" % dictparse.get_total_size())
         dictparse.get_fp().readline()
         pprint("Current Pos: %d" % dictparse.get_current_pos())
+        pprint("Totol SIZE: %d" % dictparse.get_total_size())  
+        #dictparse.reset()
+        dictparse.get_fp().readline()
+        pprint("Current Pos: %d" % dictparse.get_current_pos())
         pprint("Totol SIZE: %d" % dictparse.get_total_size())        
         pprint('='*64)
         
