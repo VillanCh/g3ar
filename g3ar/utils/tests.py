@@ -7,11 +7,14 @@
 """
 
 import unittest
+from Queue import Queue
+
 import ip_calc_utils
 from ip_calc_utils import *
 from print_utils import print_bar
 from inspect_utils import *
 from import_utils import import_by_path
+import queue_utils
 
 
 ########################################################################
@@ -74,6 +77,20 @@ class ImportUtilsTest(unittest.case.TestCase):
         """Constructor"""
         
         print(import_by_path('..', 'dict_parser'))        
+    
+########################################################################
+class QueueUtilsTest(unittest.case.TestCase):
+    """"""
+
+    #----------------------------------------------------------------------
+    def test_queue_dispatcher(self):
+        """"""
+        task_q = Queue()
+        queue_utils.async_dispatch(task_q, (x for x in range(365)))
+        for i in range(300):
+            print task_q.get()
+        
+        
     
     
     

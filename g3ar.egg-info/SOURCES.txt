@@ -26,6 +26,7 @@ g3ar/utils/import_utils.py
 g3ar/utils/inspect_utils.py
 g3ar/utils/ip_calc_utils.py
 g3ar/utils/print_utils.py
+g3ar/utils/queue_utils.py
 g3ar/utils/tests.py
 g3ar/utils/ipwhois/__init__.py
 g3ar/utils/ipwhois/exceptions.py
