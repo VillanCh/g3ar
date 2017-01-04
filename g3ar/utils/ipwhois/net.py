@@ -66,7 +66,7 @@ except ImportError:  # pragma: no cover
                          build_opener,
                          Request,
                          URLError)
-    from urllib import urlencode
+    from urllib.parse import urlencode
 
 log = logging.getLogger(__name__)
 
@@ -247,7 +247,7 @@ class Net:
             # Parse out the ASN information.
             ret = {'asn_registry': temp[3].strip(' \n')}
 
-            if ret['asn_registry'] not in RIR_WHOIS.keys():
+            if ret['asn_registry'] not in list(RIR_WHOIS.keys()):
 
                 raise ASNRegistryError(
                     'ASN registry {0} is not known.'.format(
@@ -339,7 +339,7 @@ class Net:
 
             ret = {'asn_registry': temp[4].strip(' \n')}
 
-            if ret['asn_registry'] not in RIR_WHOIS.keys():
+            if ret['asn_registry'] not in list(RIR_WHOIS.keys()):
 
                 raise ASNRegistryError(
                     'ASN registry {0} is not known.'.format(

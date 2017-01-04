@@ -176,7 +176,8 @@ def do_one(dest_addr, timeout):
     icmp = socket.getprotobyname("icmp")
     try:
         my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
-    except socket.error, (errno, msg):
+    except socket.error as xxx_todo_changeme:
+        (errno, msg) = xxx_todo_changeme.args
         if errno == 1:
             # Operation not permitted
             msg = msg + (
@@ -201,11 +202,11 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
     the result.
     """
     delay_ave = 0
-    for i in xrange(count):
+    for i in range(count):
         #print "ping %s..." % dest_addr,
         try:
             delay  =  do_one(dest_addr, timeout)
-        except socket.gaierror, e:
+        except socket.gaierror as e:
             #print "failed. (socket error: '%s')" % e[1]
             break
 

@@ -8,7 +8,7 @@
 import uuid
 import time
 import unittest
-from Queue import Queue, Empty
+from queue import Queue, Empty
 import threading
 from threading import Thread
 import inspect
@@ -105,7 +105,7 @@ class Contractor(object):
 
         try:
             result = func(*args, **argv)
-        except Exception, e:
+        except Exception as e:
             #print 'ecp occured'
             result = tuple([e, traceback.extract_stack()])
         
@@ -116,7 +116,7 @@ class Contractor(object):
 
     def _add_result_to_queue(self, **kw):
         """"""
-        assert kw.has_key('result'), '[!] Result Error!'
+        assert 'result' in kw, '[!] Result Error!'
 
         self.result_queue.put(kw['result']) 
         self._current_thread_count = self._current_thread_count - 1
@@ -175,7 +175,7 @@ class Contractor(object):
 class UtilsTest(unittest.case.TestCase):
     def runTest(self):
         ms = inspect.getmembers(self)
-        ms = map(lambda x: x[0], ms)
+        ms = [x[0] for x in ms]
         for i in ms:
             if callable(getattr(self,i)):
                 if i.startswith('test_'):
@@ -184,27 +184,27 @@ class UtilsTest(unittest.case.TestCase):
     def test_pool(self):
         def demo_task(*args):
             '''simulate the plugin.run'''
-            print '[!] Computing!'
+            print('[!] Computing!')
             time.sleep(args[0])
-            print '[!] Finished!'
-            print
+            print('[!] Finished!')
+            print()
             returns = 'Runtime Length : %s' % str(args)
             return returns
         pool = Contractor()
         pool.add_task(demo_task, 7)
         pool.add_task(demo_task, 3)
         q = pool.start()
-        print pool._current_thread_count
+        print(pool._current_thread_count)
         self.assertIsInstance(q, Queue)
 
         r = q.get()
-        print r
+        print(r)
         self.assertIsInstance(r, str)
         r = q.get()
-        print r
+        print(r)
         self.assertIsInstance(r, str)
 
-        print pool._current_thread_count
+        print(pool._current_thread_count)
 
 
 if __name__ == '__main__':

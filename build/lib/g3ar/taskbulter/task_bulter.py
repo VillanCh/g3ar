@@ -13,10 +13,10 @@ from threading import Thread
 from pprint import pprint
 from inspect import getmembers
 
-import exceptions
-from process_task import ProcessTask
-from utils_class import Singleton
-from process_task import testfun
+from . import exceptions
+from .process_task import ProcessTask
+from .utils_class import Singleton
+from .process_task import testfun
 
 
 
@@ -42,7 +42,7 @@ class TaskBulter(Singleton):
     #----------------------------------------------------------------------
     def _daemon_start(self, name, func):
         """"""
-        if self._daemon_threads.has_key(name):
+        if name in self._daemon_threads:
             pass
         else:
             ret = Thread(name=name, target=func)
@@ -64,7 +64,7 @@ class TaskBulter(Singleton):
         """"""
         #pprint('daemon threads started')
         while self._closed == False:
-            for i in self._tasks_table.items():
+            for i in list(self._tasks_table.items()):
                 pipe = i[1]['status_monitor_pipe']
                 if self._tasks_table[i[0]]['process_instance'].exitcode == None:
                     if pipe.poll():
@@ -93,7 +93,7 @@ class TaskBulter(Singleton):
         
         if not callable(target): exceptions.TaskCannotBeCalled
         
-        if cls._tasks_table.has_key(id):
+        if id in cls._tasks_table:
             raise exceptions.ExistedTaskId
         
         control_pipe, child_pipe = Pipe(duplex=False)
@@ -122,7 +122,7 @@ class TaskBulter(Singleton):
     #----------------------------------------------------------------------
     def get_task_by_id(self, id):
         """"""
-        if self._tasks_table.has_key(id):
+        if id in self._tasks_table:
             return self._tasks_table[id]
         else:
             return None
@@ -132,7 +132,7 @@ class TaskBulter(Singleton):
         """"""
         if isinstance(id_or_taskinstance, ProcessTask):
             id_or_taskinstance.terminate()
-        elif isinstance(id_or_taskinstance, (unicode, str)):
+        elif isinstance(id_or_taskinstance, str):
             _ = self.get_task_by_id(id_or_taskinstance)['process_instance']
             assert isinstance(_, ProcessTask)
             _.terminate()

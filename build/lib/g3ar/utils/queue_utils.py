@@ -9,7 +9,7 @@
 import unittest
 import threading
 import time
-from Queue import Empty
+from queue import Empty
 
 #----------------------------------------------------------------------
 def sync_dispatch(queue_instance, task_generator, 
@@ -26,7 +26,7 @@ def sync_dispatch(queue_instance, task_generator,
     
     assert isinstance(interval, (int, float)), \
            '[!] [interval] should be a float/int! '
-    assert isinstance(buffer_size, (int, )), \
+    assert isinstance(buffer_size, int), \
            '[!] [buffer_size] should be a int! '
     
     for i in task_generator:
@@ -52,7 +52,7 @@ def async_dispatch(queue_instance, task_generator,
     
     assert isinstance(interval, (int, float)), \
            '[!] [interval] should be a float/int! '
-    assert isinstance(buffer_size, (int, )), \
+    assert isinstance(buffer_size, int), \
            '[!] [buffer_size] should be a int! '
     
     def _worker():

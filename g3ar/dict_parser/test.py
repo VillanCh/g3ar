@@ -7,7 +7,7 @@
 """
 
 import unittest
-from dict_parser import *
+from .dict_parser import *
 
 
 ########################################################################

@@ -8,7 +8,7 @@
 
 import unittest
 import traceback
-from decologger import Decologger
+from .decologger import Decologger
 
 
 ########################################################################
@@ -18,11 +18,11 @@ class DecologgerTest(unittest.case.TestCase):
     #----------------------------------------------------------------------
     def test_learn_decorector(self):
         """"""
-        print('='*64)
+        print(('='*64))
         def logit(func):
             def wrapper(*args, **kwargs):
-                print('wrapper got param', args, kwargs)
-                print('pre call', func.__name__)
+                print(('wrapper got param', args, kwargs))
+                print(('pre call', func.__name__))
                 return func(*args, **kwargs)
             return wrapper
     
@@ -30,28 +30,28 @@ class DecologgerTest(unittest.case.TestCase):
         @logit
         def funct(args):
             """"""
-            print('funct called! Got Param', args)
+            print(('funct called! Got Param', args))
         
         funct('Hello')
         
         def sss(*arg):
-            print arg
-            print 'sssss called' 
+            print(arg)
+            print('sssss called') 
             return logit(arg[0])
         
         @sss
         def tests():
-            print 'tests called'
+            print('tests called')
         
         tests()
         
-        print('='*64)
+        print(('='*64))
     
     def test_exception(self):
         try:
             raise Exception('adfasdfasdf')
         except:
-            print traceback.extract_stack()
+            print(traceback.extract_stack())
             traceback.format_exc()
     
     #----------------------------------------------------------------------
@@ -70,14 +70,14 @@ class DecologgerTest(unittest.case.TestCase):
             @dclogger.crucial
             def B(self):
                 """"""
-                print 'B Called!'
+                print('B Called!')
         
         
         dclogger.critical('Hello Critical')
         A().B()
                 
         
-        print('='*64)
+        print(('='*64))
         
         
         

@@ -92,7 +92,7 @@ class Decologger(object):
         #
         # init root logger
         #
-        assert isinstance(self._name, (unicode, str))
+        assert isinstance(self._name, str)
         self._root_logger = logging.getLogger(self._name)
         self._root_logger.setLevel(root_log_level.upper())
         
@@ -207,7 +207,7 @@ class Decologger(object):
     #----------------------------------------------------------------------
     def ordinary_dctr(self, func):
         """"""
-        print 'function recved'
+        print('function recved')
         return func
         
     
@@ -232,7 +232,7 @@ class Decologger(object):
                     
                     if log_trace:
                         self.debug(msg='Out of: ' + get_func_info(func))
-                except Exception, e:
+                except Exception as e:
                     if log_exception:
                         self.crucial_log(repr(traceback.print_exc()))
                     
@@ -302,11 +302,11 @@ if __name__ == '__main__':
     @dclogger.crucial
     def test():
         """"""
-        print 'testcalled'
-        print 'Success'
+        print('testcalled')
+        print('Success')
         return "Success"
     
-    print test()
+    print(test())
     
         
     

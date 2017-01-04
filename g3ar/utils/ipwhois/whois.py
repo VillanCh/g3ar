@@ -239,7 +239,7 @@ class Whois:
                           'created', 'updated']
 
         generate = ((field, pattern) for (field, pattern) in
-                    fields_dict.items() if field in field_list)
+                    list(fields_dict.items()) if field in field_list)
 
         for field, pattern in generate:
 

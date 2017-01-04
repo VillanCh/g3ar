@@ -36,7 +36,7 @@ class DictParser():
         if os.path.exists(abspathfile):
             self._filename = filename
         else:
-            raise StandardError('[!] No Such Dict File')
+            raise Exception('[!] No Such Dict File')
         
         self._session_data_file = session_data_file
         self._session_id = md5(session_id+filename).hexdigest()
@@ -46,7 +46,7 @@ class DictParser():
         
         # continue last task
         if do_continue:
-            if self._session_progress_table.has_key(self._session_id):
+            if self._session_id in self._session_progress_table:
                 pos = self._session_progress_table[self._session_id]
                 self._dict_file_p.seek(pos)
 
@@ -57,7 +57,7 @@ class DictParser():
         
 
     #----------------------------------------------------------------------
-    def next(self):
+    def __next__(self):
         """"""
         return self._next()
     
@@ -110,7 +110,7 @@ class DictParser():
     def get_next_collection(self, num=200):
         """Returns a tuple for the next [num] paylaod(lines)"""
         ret = []
-        for i in xrange(num):
+        for i in range(num):
             try:
                 ret.append(self._next())
             except StopIteration:

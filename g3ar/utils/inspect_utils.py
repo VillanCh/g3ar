@@ -73,8 +73,14 @@ def get_functions(module_or_instance, public=True):
             ret.append(i)
     
     if public:
-        ret = filter(lambda x: None if x.func_name.startswith('_') \
-                     else x, ret)
+        for i in range(len(ret)):
+            if ret[i].startswith('_'):
+                ret[i] = None
+        while True:
+            try:
+                ret.remove(None)
+            except ValueError:
+                break
     else:
         pass
     
@@ -97,8 +103,14 @@ def get_methods(instance, public=True):
             ret.append(i)
     
     if public:
-        ret = filter(lambda x: None if x.func_name.startswith('_') \
-                     else x, ret)
+        for i in range(len(ret)):
+            if ret[i].startswith('_'):
+                ret[i] = None
+        while True:
+            try:
+                ret.remove(None)
+            except ValueError:
+                break
     else:
         pass
     
@@ -136,7 +148,7 @@ def get_args_dict(func):
     for i in spec.args:
         args['args_table'][i] = None
     
-    for i in xrange(len(args['defaults'])):
+    for i in range(len(args['defaults'])):
         index = -1 - i
         args['args_table'][spec.args[index]] = spec.defaults[index]
     
@@ -153,7 +165,7 @@ def get_neccessary_params(func):
     result = []
     
     table = get_args_dict(func)['args']['args_table']
-    for i in table.items():
+    for i in list(table.items()):
         if i[1] != None:
             pass
         else:

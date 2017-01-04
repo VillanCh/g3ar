@@ -9,7 +9,7 @@
 import unittest
 
 from IPy import IP
-from ipwhois import IPWhois
+from .ipwhois import IPWhois
 from random import randint, seed
 from time import time
 

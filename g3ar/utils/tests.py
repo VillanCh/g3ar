@@ -7,14 +7,14 @@
 """
 
 import unittest
-from Queue import Queue
+from queue import Queue
 
-import ip_calc_utils
-from ip_calc_utils import *
-from print_utils import print_bar
-from inspect_utils import *
-from import_utils import import_by_path
-import queue_utils
+from . import ip_calc_utils
+from .ip_calc_utils import *
+from .print_utils import print_bar
+from .inspect_utils import *
+from .import_utils import import_by_path
+from . import queue_utils
 
 
 ########################################################################
@@ -55,7 +55,7 @@ class IPutilcTest(unittest.case.TestCase):
     #----------------------------------------------------------------------
     def test_little_utils(self):
         """"""
-        print is_ipv4('45.78.65.21')
+        print(is_ipv4('45.78.65.21'))
         for i in get_all_c_class('222.45.35.4'):
             #print i
             pass
@@ -63,10 +63,10 @@ class IPutilcTest(unittest.case.TestCase):
         get_ip_block_from_ipwhois('222.45.35.4')
                   
         for i in ipv4_range('124.5.2.3','124.5.3.9'):
-            print i
+            print(i)
         
         for i in range(20):
-            print random_ip()
+            print(random_ip())
         
 ########################################################################
 class ImportUtilsTest(unittest.case.TestCase):
@@ -76,7 +76,7 @@ class ImportUtilsTest(unittest.case.TestCase):
     def test_import_utils(self):
         """Constructor"""
         
-        print(import_by_path('..', 'dict_parser'))        
+        print((import_by_path('..', 'dict_parser')))        
     
 ########################################################################
 class QueueUtilsTest(unittest.case.TestCase):
@@ -88,7 +88,7 @@ class QueueUtilsTest(unittest.case.TestCase):
         task_q = Queue()
         queue_utils.async_dispatch(task_q, (x for x in range(365)))
         for i in range(300):
-            print task_q.get()
+            print(task_q.get())
         
         
     

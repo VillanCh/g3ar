@@ -52,7 +52,7 @@ try:  # pragma: no cover
     from itertools import filterfalse
 
 except ImportError:  # pragma: no cover
-    from itertools import ifilterfalse as filterfalse
+    from itertools import filterfalse as filterfalse
 
 log = logging.getLogger(__name__)
 
@@ -530,7 +530,7 @@ def unique_addresses(data=None, file_path=None):
 
                     obj_str = ip_obj.__str__()
 
-                    if obj_str not in ret.keys():
+                    if obj_str not in list(ret.keys()):
 
                         ret[obj_str] = copy.deepcopy(base)
 

@@ -13,7 +13,7 @@ from .threadutils import contractor
 from .decologger import decologger
 from .dict_parser import dict_parser
 from .taskbulter import task_bulter
-from .utils import ip_calc_utils
+#from .utils import ip_calc_utils
 from .utils.pyping import pyping
 
 ThreadPool = thread_pool.Pool
@@ -21,13 +21,10 @@ Contractor = contractor.Contractor
 DictParser = dict_parser.DictParser
 DecoLogger = decologger.Decologger
 TaskBulter = task_bulter.TaskBulter
-IPv4CalcUtils = ip_calc_utils
+#IPv4CalcUtils = ip_calc_utils
+
 
 #----------------------------------------------------------------------
 def ping(host, timeout=2, count=4):
     """"""
     return pyping(host, timeout, count)
-    
-
-if __name__ == '__main__':
-    unittest.main()

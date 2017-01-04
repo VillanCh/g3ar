@@ -10,7 +10,7 @@ import unittest
 #import multiprocessing 
 from pprint import pprint
 from time import sleep
-from Queue import Full, Empty, Queue
+from queue import Full, Empty, Queue
 #from random import choice
 #from traceback import format_exc
 from threading import Thread, Lock
@@ -83,7 +83,7 @@ class LaborThread(Thread):
                     result['state'] = True
                     result['result'] = ret
                     #self._result_queue.put(result)                    
-                except Exception, e:
+                except Exception as e:
                     result['state'] = False
                     result['result'] = None
                     exception_i = (str(type(e)), str(e))
@@ -109,7 +109,7 @@ class LaborThread(Thread):
         try:
             ret = task[0](*task[1], **task[2])
             return ret 
-        except Exception, e:
+        except Exception as e:
             raise e
             
         
@@ -185,8 +185,7 @@ class Pool(object):
             try:
                 ret = self._task_queue.get()
                 while True:
-                    availible_threads = map(lambda x: None if x.get_task_queue().full() else x, 
-                                            self._current_thread)
+                    availible_threads = [None if x.get_task_queue().full() else x for x in self._current_thread]
                     for i in availible_threads:
                         if i == None:
                             pass
@@ -284,13 +283,13 @@ class PoolTest(unittest.case.TestCase):
     def test_pool(self):
         """"""
         def func1(arg1):
-            print 'func1 called!'
+            print('func1 called!')
             return arg1
             
         pool = Pool()
         pool.start()
         pool.feed(func1, 12345)
-        for i in xrange(10):
+        for i in range(10):
             pool.feed(func1, i)
         sleep(3)
         while True:

@@ -13,7 +13,7 @@ packages = find_packages()
 
 requires = ['IPy', 'ipwhois', 'colorama']
 
-version = '0.0.7b2_5'
+version = '0.1.3'
 
 #
 # LOAD README.md
@@ -22,7 +22,7 @@ try:
     readme = None
     with copen('README.md', encoding='utf-8') as f:
         readme = f.read()
-        
+
     history = None
     with copen('HISTORY.md', encoding='utf-8') as f:
         history = f.read()
@@ -31,8 +31,8 @@ except:
         '\nGithub: https://github.com/VillanCh/g3ar' + \
         '\nREADME.md: https://github.com/VillanCh/g3ar/blob/master/README.md\n\n'
     history = 'https://github.com/VillanCh/g3ar/blob/master/HISTORY.md'
-    
-    
+
+
 setup(
     name='g3ar',
     version=version,

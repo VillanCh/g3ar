@@ -319,7 +319,7 @@ def generate_output(line='0', short=None, name=None, value=None,
     # TODO: so ugly
     output = '{0}{1}{2}{3}{4}{5}{6}{7}\n'.format(
         LINES['{0}{1}'.format(line, 'C' if colorize else '')] if (
-            line in LINES.keys()) else '',
+            line in list(LINES.keys())) else '',
         COLOR_DEPTH[line] if (colorize and line in COLOR_DEPTH) else '',
         ANSI['b'],
         short if short is not None else (
@@ -756,7 +756,7 @@ class IPWhoisCLI:
             colorize=colorize
         )
 
-        for key, val in json_data['network'].items():
+        for key, val in list(json_data['network'].items()):
 
             if key in ['links', 'status']:
 
@@ -835,7 +835,7 @@ class IPWhoisCLI:
         )
 
         count = 0
-        for obj_name, obj in json_data['objects'].items():
+        for obj_name, obj in list(json_data['objects'].items()):
             if count > 0:
                 output += self.generate_output_newline(
                     line='1',
@@ -850,7 +850,7 @@ class IPWhoisCLI:
                 colorize=colorize
             )
 
-            for key, val in obj.items():
+            for key, val in list(obj.items()):
 
                 if key in ['links', 'entities', 'roles', 'status']:
 
@@ -905,7 +905,7 @@ class IPWhoisCLI:
 
                     if val is not None:
 
-                        for k, v in val.items():
+                        for k, v in list(val.items()):
 
                             if k in ['phone', 'address', 'email']:
 
@@ -1089,7 +1089,7 @@ class IPWhoisCLI:
                 colorize=colorize
             )
 
-            for key, val in net.items():
+            for key, val in list(net.items()):
 
                 if val and '\n' in val:
 
@@ -1155,7 +1155,7 @@ class IPWhoisCLI:
 
         if json_data['referral']:
 
-            for key, val in json_data['referral'].items():
+            for key, val in list(json_data['referral'].items()):
 
                 if val and '\n' in val:
 
@@ -1239,7 +1239,7 @@ class IPWhoisCLI:
                     colorize=colorize
                 )
 
-                for key, val in net.items():
+                for key, val in list(net.items()):
 
                     if val and (isinstance(val, dict) or '\n' in val or
                                 key == 'nameservers'):
@@ -1261,7 +1261,7 @@ class IPWhoisCLI:
 
                         if key == 'contacts':
 
-                            for k, v in val.items():
+                            for k, v in list(val.items()):
 
                                 if v:
 
@@ -1273,7 +1273,7 @@ class IPWhoisCLI:
                                         colorize=colorize
                                     )
 
-                                    for contact_key, contact_val in v.items():
+                                    for contact_key, contact_val in list(v.items()):
 
                                         if v is not None:
 
@@ -1398,7 +1398,7 @@ if script_args.addr:
 
     if script_args.whois:
 
-        print(results.lookup_whois(
+        print((results.lookup_whois(
             hr=script_args.hr,
             show_name=script_args.show_name,
             colorize=script_args.colorize,
@@ -1420,11 +1420,11 @@ if script_args.addr:
             nir_field_list=script_args.nir_field_list.split(',') if (
                 script_args.nir_field_list and
                 len(script_args.nir_field_list) > 0) else None
-        ))
+        )))
 
     else:
 
-        print(results.lookup_rdap(
+        print((results.lookup_rdap(
             hr=script_args.hr,
             show_name=script_args.show_name,
             colorize=script_args.colorize,
@@ -1444,4 +1444,4 @@ if script_args.addr:
             nir_field_list=script_args.nir_field_list.split(',') if (
                 script_args.nir_field_list and
                 len(script_args.nir_field_list) > 0) else None
-        ))
+        )))

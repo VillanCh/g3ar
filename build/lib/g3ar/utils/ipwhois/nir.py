@@ -214,7 +214,7 @@ class NIRWhois:
                 field_list.append('contact_tech')
 
         generate = ((field, pattern) for (field, pattern) in
-                    fields_dict.items() if field in field_list)
+                    list(fields_dict.items()) if field in field_list)
 
         for field, pattern in generate:
 
@@ -462,7 +462,7 @@ class NIRWhois:
                 (String)
         """
 
-        if nir not in NIR_WHOIS.keys():
+        if nir not in list(NIR_WHOIS.keys()):
 
             raise KeyError('Invalid arg for nir (National Internet Registry')
 
@@ -555,7 +555,7 @@ class NIRWhois:
 
             if not is_offline:
 
-                for key, val in contacts.items():
+                for key, val in list(contacts.items()):
 
                     if len(val) > 0:
 
@@ -565,7 +565,7 @@ class NIRWhois:
 
                         for contact in val:
 
-                            if contact in global_contacts.keys():
+                            if contact in list(global_contacts.keys()):
 
                                 temp_net['contacts'][key] = (
                                     global_contacts[contact]

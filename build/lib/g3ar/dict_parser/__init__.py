@@ -6,8 +6,8 @@
   Created: 2016/12/16
 """
 
-import dict_parser
-from dict_parser import *
+from . import dict_parser
+from .dict_parser import *
 
 def get_dictparser(filename, 
                    session_id=DEFAULT_SESSION_ID, 

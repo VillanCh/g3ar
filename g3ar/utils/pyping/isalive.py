@@ -7,7 +7,7 @@
 """
 
 import unittest
-from ping import verbose_ping
+from .ping import verbose_ping
 
 #----------------------------------------------------------------------
 def is_alive(host, timeout=2, count=4):
@@ -46,7 +46,7 @@ class IsAliveTest(unittest.case.TestCase):
     def test_pingtest(self):
         """Ping test"""
         
-        print ping_host('45.78.6.64')
+        print(ping_host('45.78.6.64'))
         
         
     

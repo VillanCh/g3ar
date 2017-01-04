@@ -7,7 +7,7 @@
 """
 
 import unittest
-from isalive import is_alive
+from .isalive import is_alive
 
 #----------------------------------------------------------------------
 def pyping(target, timeout=2, count=4):

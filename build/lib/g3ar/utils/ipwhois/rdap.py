@@ -780,7 +780,7 @@ class RDAP:
         while depth > 0 and len(temp_objects) > 0:
 
             new_objects = {}
-            for obj in temp_objects.values():
+            for obj in list(temp_objects.values()):
 
                 try:
 

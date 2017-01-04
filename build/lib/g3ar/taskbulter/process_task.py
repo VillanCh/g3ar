@@ -13,7 +13,7 @@ import threading
 from multiprocessing import Pipe
 from pprint import pprint
 
-import exceptions
+from . import exceptions
 
 def sleep_(num):
     #pprint("~~~")
@@ -120,12 +120,12 @@ class ProcessTaskTest(unittest.case.TestCase):
     #----------------------------------------------------------------------
     def print_bar(self):
         """"""
-        print('-'*64)
+        print(('-'*64))
     
     #----------------------------------------------------------------------
     def print_end_bar(self):
         """"""
-        print('-'*30 + 'END' + '-'*31)
+        print(('-'*30 + 'END' + '-'*31))
         
         
 
