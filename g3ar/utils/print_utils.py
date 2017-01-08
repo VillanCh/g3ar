@@ -16,7 +16,7 @@ def print_bar(text=None, basic_char='=', length=70, color=None):
         text = str(text)
         textlen = len(text)
         length_one_side = (length - textlen) / 2
-        bar_side = basic_char * length_one_side
+        bar_side = basic_char * int(length_one_side)
         bar = bar_side + text + bar_side
     else:
         bar = basic_char * length

@@ -9,3 +9,5 @@
 2017-01-08 23:42:00,344-testlogger.critical-CRITICAL: Hello Critical -- [process_id:2504][thread_name:MainThread-id:7928]
 2017-01-08 23:42:52,461-testlogger.critical-CRITICAL: Hello Critical -- [process_id:5004][thread_name:MainThread-id:13860]
 2017-01-09 00:42:28,015-testlogger.critical-CRITICAL: Hello Critical -- [process_id:12820][thread_name:MainThread-id:5952]
+2017-01-09 00:52:48,555-testlogger.critical-CRITICAL: Hello Critical -- [process_id:13496][thread_name:MainThread-id:12596]
+2017-01-09 00:53:39,710-testlogger.critical-CRITICAL: Hello Critical -- [process_id:15084][thread_name:MainThread-id:12080]

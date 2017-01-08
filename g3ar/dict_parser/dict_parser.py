@@ -12,7 +12,7 @@ import os
 from pprint import pprint
 from hashlib import md5
 
-SESSION_TABLE_FILE = 'sessions.dat'
+SESSION_TABLE_FILE = 'sessions_dat'
 DEFAULT_SESSION_ID = 'default'
 
 ########################################################################
@@ -42,8 +42,11 @@ class DictParser(object):
         self._session_id = md5(str(session_id+filename).encode('utf-8')).hexdigest()
         
         self._dict_file_p = open(self._filename)
-        self._session_progress_table = shelve.open(os.path.abspath(self._session_data_file))
-        
+        try:
+            self._session_progress_table = shelve.open(os.path.abspath(self._session_data_file))
+        except:
+            os.remove(os.path.abspath(self._session_data_file))
+            self._session_progress_table = shelve.open(os.path.abspath(self._session_data_file))
         # continue last task
         if do_continue:
             if self._session_id in self._session_progress_table:
