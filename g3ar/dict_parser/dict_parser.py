@@ -50,7 +50,10 @@ class DictParser(object):
         # continue last task
         if do_continue:
             if self._session_id in self._session_progress_table:
-                pos = self._session_progress_table[self._session_id]
+                try:
+                    pos = self._session_progress_table[self._session_id]
+                except ValueError:
+                    pos = 0
                 self._dict_file_p.seek(pos)
 
     #----------------------------------------------------------------------

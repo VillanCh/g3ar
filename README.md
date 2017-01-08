@@ -1,4 +1,6 @@
 # g3ar 渗透编程工具包： 极速打造渗透测试工具
+完美支持： Python2  
+单元测试通过： Python3
 
 
 ## 功能概述
@@ -16,10 +18,22 @@
 	* 装饰器接口
 	* 自动追踪函数，日志记录函数的调用，Trace，和异常情况
 
-## 依赖
-
-	Python 2.7
-	ipwhois
+## 依赖  
+	colorama==0.3.7
+	decorator==4.0.10
+	IPy==0.83
+	ipython==5.1.0
+	ipython-genutils==0.1.0
+	pexpect==4.2.1
+	pickleshare==0.7.4
+	prompt-toolkit==1.0.9
+	ptyprocess==0.5.1
+	Pygments==2.1.3
+	simplegeneric==0.8.1
+	six==1.10.0
+	traitlets==4.3.1
+	wcwidth==0.1.7
+#### Python2
 
 ## 安装
 
