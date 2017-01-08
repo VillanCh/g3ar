@@ -9,7 +9,7 @@
 import unittest
 
 from IPy import IP
-from .ipwhois import IPWhois
+#from .ipwhois import IPWhois
 from random import randint, seed
 from time import time
 
@@ -39,17 +39,6 @@ def get_all_c_class(ip):
     for i in IP(ip).make_net('255.255.255.0'):
         yield i.strNormal()
     
-#----------------------------------------------------------------------
-def get_ip_block_from_ipwhois(ip):
-    """"""
-    if is_ipv4(ip):
-        the_whole_ip_block = IPWhois(ip).lookup_whois()['asn_cidr']
-    else:
-        raise ValueError('Plz Input A valid ip addr(v4)!')
-    
-    for i in IP(the_whole_ip_block):
-        yield i.strNormal()
-
 #----------------------------------------------------------------------
 def ip2int(ip):
     """"""

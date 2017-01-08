@@ -74,7 +74,7 @@ def get_functions(module_or_instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].startswith('_'):
+            if ret[i].func_name.startswith('_'):
                 ret[i] = None
         while True:
             try:
@@ -104,7 +104,7 @@ def get_methods(instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].startswith('_'):
+            if ret[i].func_name.startswith('_'):
                 ret[i] = None
         while True:
             try:
