@@ -10,7 +10,7 @@ import unittest
 #import multiprocessing 
 from pprint import pprint
 from time import sleep
-from queue import Full, Empty, Queue
+from Queue import Full, Empty, Queue
 #from random import choice
 #from traceback import format_exc
 from threading import Thread, Lock
