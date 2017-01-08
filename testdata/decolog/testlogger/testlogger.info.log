@@ -8,3 +8,7 @@
 2017-01-08 23:38:59,887-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:4068][thread_name:MainThread-id:4572]
 2017-01-08 23:42:00,344-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:2504][thread_name:MainThread-id:7928]
 2017-01-08 23:42:52,461-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:5004][thread_name:MainThread-id:13860]
+2017-01-08 11:22:29,173-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:5761][thread_name:MainThread-id:-1219395264]
+2017-01-08 11:34:01,476-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:5961][thread_name:MainThread-id:-1219747520]
+2017-01-08 11:37:37,657-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:6122][thread_name:MainThread-id:-1220271808]
+2017-01-08 11:39:18,449-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:6329][thread_name:MainThread-id:-1219677888]

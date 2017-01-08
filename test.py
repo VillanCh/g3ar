@@ -14,7 +14,7 @@ import traceback
 from time import sleep
 #from g3ar.threadutils import thread_pool, contractor
 #from g3ar.taskbulter import task_bulter
-from queue import Empty, Queue
+from Queue import Empty, Queue
 #ThreadPool = thread_pool.Pool
 #Contractor = contractor.Contractor
 #TaskBulter = task_bulter.TaskBulter
