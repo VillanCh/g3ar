@@ -39,7 +39,7 @@ class DictParser(object):
             raise Exception('[!] No Such Dict File')
         
         self._session_data_file = session_data_file
-        self._session_id = md5(session_id+filename).hexdigest()
+        self._session_id = md5(str(session_id+filename).encode('utf-8')).hexdigest()
         
         self._dict_file_p = open(self._filename)
         self._session_progress_table = shelve.open(os.path.abspath(self._session_data_file))
