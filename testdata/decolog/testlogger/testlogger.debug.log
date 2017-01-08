@@ -44,3 +44,13 @@
 2017-01-09 01:08:06,709-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8072][thread_name:MainThread-id:11252]
 2017-01-09 01:08:06,713-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8072][thread_name:MainThread-id:11252]
 >>>>>>> 568555d59306b092fb39a05efae6b0174d25ab3e
+2017-01-08 12:11:12,742-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8588][thread_name:MainThread-id:-1219396608]
+2017-01-08 12:11:12,743-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8588][thread_name:MainThread-id:-1219396608]
+2017-01-08 12:11:28,996-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8753][thread_name:MainThread-id:-1220054720]
+2017-01-08 12:11:28,997-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:8753][thread_name:MainThread-id:-1220054720]
+2017-01-08 12:17:58,186-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9034][thread_name:MainThread-id:-1220019200]
+2017-01-08 12:17:58,186-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9034][thread_name:MainThread-id:-1220019200]
+2017-01-08 12:18:44,439-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9191][thread_name:MainThread-id:-1219321536]
+2017-01-08 12:18:44,439-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9191][thread_name:MainThread-id:-1219321536]
+2017-01-08 12:19:50,592-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9345][thread_name:MainThread-id:-1219617792]
+2017-01-08 12:19:50,593-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:9345][thread_name:MainThread-id:-1219617792]

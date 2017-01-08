@@ -24,3 +24,8 @@
 2017-01-09 00:53:39,710-testlogger.critical-CRITICAL: Hello Critical -- [process_id:15084][thread_name:MainThread-id:12080]
 2017-01-09 01:08:06,707-testlogger.critical-CRITICAL: Hello Critical -- [process_id:8072][thread_name:MainThread-id:11252]
 >>>>>>> 568555d59306b092fb39a05efae6b0174d25ab3e
+2017-01-08 12:11:12,742-testlogger.critical-CRITICAL: Hello Critical -- [process_id:8588][thread_name:MainThread-id:-1219396608]
+2017-01-08 12:11:28,996-testlogger.critical-CRITICAL: Hello Critical -- [process_id:8753][thread_name:MainThread-id:-1220054720]
+2017-01-08 12:17:58,185-testlogger.critical-CRITICAL: Hello Critical -- [process_id:9034][thread_name:MainThread-id:-1220019200]
+2017-01-08 12:18:44,438-testlogger.critical-CRITICAL: Hello Critical -- [process_id:9191][thread_name:MainThread-id:-1219321536]
+2017-01-08 12:19:50,592-testlogger.critical-CRITICAL: Hello Critical -- [process_id:9345][thread_name:MainThread-id:-1219617792]
