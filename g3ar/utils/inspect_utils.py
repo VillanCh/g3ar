@@ -74,7 +74,7 @@ def get_functions(module_or_instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].func_name.startswith('_'):
+            if ret[i].__name__.startswith('_'):
                 ret[i] = None
         while True:
             try:
@@ -104,7 +104,7 @@ def get_methods(instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].func_name.startswith('_'):
+            if ret[i].__name__.startswith('_'):
                 ret[i] = None
         while True:
             try:
@@ -130,7 +130,7 @@ def get_args_dict(func):
     result = {}
     
     try:
-        func_name = getattr(func, 'func_name')
+        func_name = getattr(func, '__name__')
     except:
         func_name = str(func)
     
