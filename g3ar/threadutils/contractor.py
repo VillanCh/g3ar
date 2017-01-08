@@ -8,7 +8,10 @@
 import uuid
 import time
 import unittest
-from queue import Queue, Empty
+try:
+    from queue import Queue, Empty
+except:
+    from Queue import Queue, Empty
 import threading
 from threading import Thread
 import inspect

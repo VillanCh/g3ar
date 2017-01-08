@@ -7,8 +7,10 @@
 """
 
 import unittest
-from queue import Queue
-
+try:
+    from queue import Queue
+except:
+    from Queue import Queue
 from . import ip_calc_utils
 from .ip_calc_utils import *
 from .print_utils import print_bar

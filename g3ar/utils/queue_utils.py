@@ -9,8 +9,11 @@
 import unittest
 import threading
 import time
-from queue import Empty
-
+try:
+    from queue import Empty
+except:
+    from Queue import Empty
+    
 #----------------------------------------------------------------------
 def sync_dispatch(queue_instance, task_generator, 
                   buffer_size=100, interval=0.05):
