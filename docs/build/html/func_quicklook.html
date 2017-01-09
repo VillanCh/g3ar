@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>功能简介 &#8212; g3ar 0.x documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.x',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="g3ar 0.x documentation" href="index.html" />
+    <link rel="prev" title="什么是 g3ar？如何安装？" href="overview.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>功能简介<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>相信你看到这里应该是对这个东西有一些兴趣了对吧？那么我们接下来就来具体说明 g3ar
+到底包含了怎么样的功能。</p>
+<div class="section" id="id2">
+<h2>功能清单<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>当然你可以说是大杂烩，因为事实上，g3ar 确实是这样，提供了关于渗透测试遇到的
+常见的编程问题的解决方案。比如之前提到的：</p>
+<ol class="arabic simple">
+<li>更方便高效可控的多线程处理（ThreadPool 与 Contractor）。</li>
+<li>进程管理（TaskBulter）可以做到对某个进程内的线程进行监控。</li>
+<li>大字典（百兆甚至上 G 级别）的解析与进度保存。</li>
+<li>日志装饰器：使用日志装饰器来进行日志记录，追踪关键函数的运行状况，无需手动追踪。</li>
+<li>小型工具库：比如快速自省工具（inspect_utils），关于 ip 的计算工具（ip_calc_utils）</li>
+</ol>
+<p>这些功能（工具类）都已经在 g3ar 中得到了实现，并且有了非常良好的表现，
+使用上面的几个小功能，作者很容易的构造出了一示例的密码爆破的框架，详见</p>
+<p><a class="reference external" href="https://github.com/VillanCh/minihydra">https://github.com/VillanCh/minihydra</a></p>
+<p>一个 mini 版的 hydra 但是可以自己定制插件脚本。</p>
+</div>
+<div class="section" id="id3">
+<h2>其他相关连接<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="index.html">首页</a></li>
+<li><a class="reference external" href="overview.html">总览</a></li>
+<li><a class="reference external" href="func_quicklook.html">功能简介</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">功能简介</a><ul>
+<li><a class="reference internal" href="#id2">功能清单</a></li>
+<li><a class="reference internal" href="#id3">其他相关连接</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="overview.html" title="previous chapter">什么是 g3ar？如何安装？</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/func_quicklook.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, v1ll4n.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/func_quicklook.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
