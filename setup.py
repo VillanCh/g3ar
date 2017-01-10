@@ -38,7 +38,7 @@ setup(
     version=version,
     description='Python Coding Toolkit for Pentester.',
     long_description=readme + '\n\n' + history,
-    author='v1ll4n/VillanCh',
+    author='v1ll4n',
     author_email='v1ll4n@villanch.top',
     url='https://github.com/VillanCh/g3ar',
     packages=packages,
