@@ -1,3 +1,9 @@
+###Version: 0.1.6
+Add inspect_utils.get_classes() to gain classes from module instance
+
+###Version: 0.1.5
+Support Py3
+
 ###Version: 0.0.7b1
 Add print_utils (print_bar)
 

@@ -8,6 +8,7 @@
 
 import unittest
 import inspect
+import types
 from types import FunctionType
 from types import MethodType
 from pprint import pprint
@@ -74,7 +75,7 @@ def get_functions(module_or_instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].startswith('_'):
+            if ret[i].__name__.startswith('_'):
                 ret[i] = None
         while True:
             try:
@@ -104,7 +105,7 @@ def get_methods(instance, public=True):
     
     if public:
         for i in range(len(ret)):
-            if ret[i].startswith('_'):
+            if ret[i].__name__.startswith('_'):
                 ret[i] = None
         while True:
             try:
@@ -130,7 +131,7 @@ def get_args_dict(func):
     result = {}
     
     try:
-        func_name = getattr(func, 'func_name')
+        func_name = getattr(func, '__name__')
     except:
         func_name = str(func)
     
@@ -175,5 +176,15 @@ def get_neccessary_params(func):
     
 
 
+
+#----------------------------------------------------------------------
+def get_classes(mod, metaclass=None):
+    """"""
+    if metaclass == None:
+        metaclass = tuple([types.TypeType, types.ClassType])
+    for i in get_callables(mod):
+        if isinstance(i, metaclass):
+            yield i
+        
 if __name__ == '__main__':
     unittest.main()

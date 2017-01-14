@@ -8,6 +8,7 @@
 
 import unittest
 import inspect
+import types
 from types import FunctionType
 from types import MethodType
 from pprint import pprint
@@ -175,5 +176,15 @@ def get_neccessary_params(func):
     
 
 
+
+#----------------------------------------------------------------------
+def get_classes(mod, metaclass=None):
+    """"""
+    if metaclass == None:
+        metaclass = tuple([types.TypeType, types.ClassType])
+    for i in get_callables(mod):
+        if isinstance(i, metaclass):
+            yield i
+        
 if __name__ == '__main__':
     unittest.main()

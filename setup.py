@@ -13,7 +13,7 @@ packages = find_packages()
 
 requires = ['IPy', 'ipwhois', 'colorama']
 
-version = '0.1.5'
+version = '0.1.6'
 
 #
 # LOAD README.md
