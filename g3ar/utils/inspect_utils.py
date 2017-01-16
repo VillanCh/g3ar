@@ -34,22 +34,30 @@ def get_callables(module_or_instance):
     return result
 
 #----------------------------------------------------------------------
-def get_fileds(module_or_instance, public=True):
+def get_fileds(module_or_instance, type=None, public=True):
     """Get all field member from [module_or_instance]
     
     Params:
         module_or_instance: :str: the name of module or instance
-         
+        type: :type: the type you want to filter or tuple([type1, type2])
+        pubic: :bool: do you want to inspect all field?
+        
     Returns:
         A dict stored the keys and values."""
     result = {}
     
     for i in inspect.getmembers(module_or_instance):
         if not callable(i[1]):
-            if i[0].startswith('_'):
+            if i[0].startswith('_') and public:
                 pass
             else:
-                result[i[0]] = i[1]
+                if type != None:
+                    if isinstance(i[1], type):
+                        result[i[0]] = i[1]
+                    else:
+                        pass
+                else:
+                    result[i[0]] = i[1]
         else:
             pass
         
