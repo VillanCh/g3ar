@@ -30,6 +30,7 @@ class TaskBulter(Singleton):
     _tasks_table = {}
     _tasks_status = {}
     _daemon_threads = {}
+    _result_tables = {}
     
     #----------------------------------------------------------------------
     def __init__(self, threads_update_interval=0):
@@ -78,7 +79,7 @@ class TaskBulter(Singleton):
     
     
     #----------------------------------------------------------------------
-    def start_task(cls, id, target, args=tuple(), kwargs={},):
+    def start_task(cls, id, target, args=tuple(), kwargs={}, result_callback=None):
         """Start A task(Process)
         
         Params:
@@ -96,13 +97,26 @@ class TaskBulter(Singleton):
         if id in cls._tasks_table:
             raise exceptions.ExistedTaskId
         
+        #
+        # create pipe
+        #
         control_pipe, child_pipe = Pipe(duplex=False)
+        result_recv_pipe, result_send_pipe = Pipe(duplex=False)
         
+        #
+        # init tables
+        #
         cls._tasks_table[id] = {}
         cls._tasks_table[id]['status_monitor_pipe'] = control_pipe
+        cls._result_tables[id]['result_pipe'] = result_recv_pipe
+        
+        #
+        # Build process and run
+        #
         task_process = ProcessTask(id, target, args=args, kwargs=kwargs, 
                                    status_monitor_pipe=child_pipe, 
-                                   threads_update_interval=cls._threads_update_interval)
+                                   threads_update_interval=cls._threads_update_interval,
+                                   result_pipe=result_send_pipe, result_hook_function=result_callback)
         
         cls._tasks_table[id]['process_instance'] = task_process
         task_process.daemon = True
@@ -137,6 +151,12 @@ class TaskBulter(Singleton):
             assert isinstance(_, ProcessTask)
             _.terminate()
         
+    
+    #----------------------------------------------------------------------
+    def get_result_pipe_table(self):
+        """"""
+        return self._result_tables
+            
     #----------------------------------------------------------------------
     def close(self):
         """"""

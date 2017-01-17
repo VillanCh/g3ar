@@ -10,14 +10,28 @@ import unittest
 import time
 import multiprocessing
 import threading
+import sys
+import types
+import warnings
 from multiprocessing import Pipe
 from pprint import pprint
+import traceback
 
-from . import exceptions
+if sys.version.startswith('2'):
+    import exceptions
+else:
+    from . import exceptions
 
 def sleep_(num):
     #pprint("~~~")
     time.sleep(num)
+
+#----------------------------------------------------------------------
+def result_callback(result):
+    """"""
+    for i in result:
+        yield i
+    
 
 #----------------------------------------------------------------------
 def testfun(num):
@@ -28,7 +42,8 @@ def testfun(num):
         #print('SubProcess Called!')
     
     time.sleep(0.4)
-    
+    for i in range(5):
+        yield i
     #pprint(threading.enumerate())
 
 ########################################################################
@@ -36,7 +51,9 @@ class ProcessTask(multiprocessing.Process):
     """"""
 
     #----------------------------------------------------------------------
-    def __init__(self, id, target, args=tuple(), kwargs={}, status_monitor_pipe=None,
+    def __init__(self, id, target, args=tuple(), kwargs={}, 
+                 status_monitor_pipe=None, result_pipe=None,
+                 result_hook_function=None,
                  threads_update_interval=0.0):
         """Constructor"""
         
@@ -52,7 +69,12 @@ class ProcessTask(multiprocessing.Process):
     
         self._threads_update_interval = threads_update_interval
                 
+        #
+        # Bulid result
+        #
         self._status_monitor_pipe = status_monitor_pipe
+        self._result_send_pipe = result_pipe
+        self._result_hook = result_hook_function
         #self._init_timer()
     
     #----------------------------------------------------------------------
@@ -74,10 +96,43 @@ class ProcessTask(multiprocessing.Process):
     def run(self):
         """"""
         self._init_timer()
+        resultdict = {}
+        resultdict['state'] = False
+        resultdict['exception'] = ''
+        resultdict['result'] = ''
         try:
-            self._target(*self.args, **self.kwargs)
-        except exceptions.TaskRuntimeError:
-            raise NotImplemented
+            #
+            # getting result and process result
+            #
+            result = self._target(*self.args, **self.kwargs)
+            if self._result_hook:
+                result = self._result_hook(result)
+            
+            resultdict['state'] = True
+            
+            #
+            # send back the result element
+            #
+            if isinstance(result, types.GeneratorType):
+                for i in result:
+                    try:
+                        resultdict['result'] = i
+                        self._result_send_pipe.send(resultdict)
+                    except Exception as e:
+                        warnings.warn('[?] the result cannot be send back!' + \
+                                      '\n Because : \n' + \
+                                      traceback.format_exc())
+            else:
+                try:
+                    resultdict['result'] = i
+                    self._result_send_pipe.send(resultdict)
+                except Exception as e:
+                    warnings.warn('[?] the result cannot be send back!' + \
+                                  '\n Because: \n' + \
+                                  traceback.format_exc())
+        except Exception as e:
+            resultdict['exception'] = traceback.format_exc()
+            self._result_send_pipe.send(resultdict)
         
     #----------------------------------------------------------------------
     def _enum_threads(self):
@@ -130,13 +185,16 @@ class ProcessTaskTest(unittest.case.TestCase):
         
 
     #----------------------------------------------------------------------
-    def runTest(self):
+    def test_basic_usage(self):
         """"""
         pipp, pipc = Pipe()
+        pips, pipr = Pipe()
         self.print_bar()
         print('Test Task Interface')
         ret_process = ProcessTask(id='test-1', target=testfun, args=(5,), 
-                                  status_monitor_pipe=pipc)
+                                  status_monitor_pipe=pipc,
+                                  result_pipe=pips, 
+                                  result_hook_function=result_callback)
         ret_process.start()
         print('Test get threads status')
         time.sleep(1)
@@ -145,6 +203,10 @@ class ProcessTaskTest(unittest.case.TestCase):
         
         threads_status = pipp.recv()
         self.assertIsInstance(threads_status, dict)
+        print pipr.recv()
+        print pipr.recv()
+        print pipr.recv()
+        print pipr.recv()
         self.print_end_bar()
         
         

@@ -153,7 +153,7 @@ class G3arTaskBulterTest(unittest.case.TestCase):
         print(bulter.get_tasks_status())
         bulter.destory_task(task)
         #bulter.close()
-
+    
 ########################################################################
 class DictParserTest(unittest.case.TestCase):
     """"""

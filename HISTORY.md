@@ -1,3 +1,9 @@
+###Version: 0.1.8
+Add result_callback to TaskBulter
+
+###Version: 0.1.7
+Add type filter to inspect_utils.get_fields(obj, [type, public])
+
 ###Version: 0.1.6
 Add inspect_utils.get_classes() to gain classes from module instance
 
