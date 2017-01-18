@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: g3ar
-Version: 0.1.8
+Version: 0.1.9
 Summary: Python Coding Toolkit for Pentester.
 Home-page: https://github.com/VillanCh/g3ar
 Author: v1ll4n
@@ -462,6 +462,9 @@ Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
         
         
         
+        ###Version: 0.1.9
+        Fix A little bug in TaskBulter (result_pipe issue)
+        
         ###Version: 0.1.8
         Add result_callback to TaskBulter
         

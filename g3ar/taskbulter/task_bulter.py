@@ -107,6 +107,7 @@ class TaskBulter(Singleton):
         # init tables
         #
         cls._tasks_table[id] = {}
+        cls._result_tables[id] = {}
         cls._tasks_table[id]['status_monitor_pipe'] = control_pipe
         cls._result_tables[id]['result_pipe'] = result_recv_pipe
         

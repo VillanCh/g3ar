@@ -1,3 +1,6 @@
+###Version: 0.1.9
+Fix A little bug in TaskBulter (result_pipe issue)
+
 ###Version: 0.1.8
 Add result_callback to TaskBulter
 
