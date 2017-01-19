@@ -206,6 +206,31 @@ class TaskBulter(Singleton):
     def close(self):
         """"""
         self._closed = True
+    
+    #----------------------------------------------------------------------
+    def destory_and_clean_task(self, id):
+        """"""
+        tasklist = []
+        if id:
+            if id in self._tasks_table.keys():
+                pass
+            else:
+                return False
+        else:
+            tasklist = self._tasks_table.keys()
+        
+        for i in tasklist:
+            self.destory_task(tasklist)
+            del self._tasks_status[i]
+            del self._tasks_table[i]
+            del self._result_tables[i]
+        
+        return True
+    
+    #----------------------------------------------------------------------
+    def reset(self):
+        """"""
+        return self.destory_and_clean_task(None)
 
         
 ########################################################################
