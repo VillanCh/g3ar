@@ -213,7 +213,7 @@ class TaskBulter(Singleton):
         tasklist = []
         if id:
             if id in self._tasks_table.keys():
-                pass
+                tasklist.append(id)
             else:
                 return False
         else:
