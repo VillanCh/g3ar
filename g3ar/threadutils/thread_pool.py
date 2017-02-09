@@ -188,7 +188,8 @@ class Pool(object):
             try:
                 ret = self._task_queue.get()
                 while True:
-                    availible_threads = [None if x.get_task_queue().full() else x for x in self._current_thread]
+                    availible_threads = [None if x.get_task_queue().full() \
+                                         else x for x in self._current_thread]
                     for i in availible_threads:
                         if i == None:
                             pass
