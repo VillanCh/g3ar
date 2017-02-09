@@ -1,3 +1,4 @@
 IPy
 ipwhois
 colorama
+prettytable

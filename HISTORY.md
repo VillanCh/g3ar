@@ -1,3 +1,9 @@
+###Version: 0.2.1
+Add print_utils function! It 's great to print table easily!
+
+###Version: 0.2.0bx
+Fix bugs and make g3ar stable
+
 ###Version: 0.1.9
 Fix A little bug in TaskBulter (result_pipe issue)
 

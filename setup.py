@@ -11,9 +11,9 @@ from setuptools import setup, find_packages
 
 packages = find_packages()
 
-requires = ['IPy', 'ipwhois', 'colorama']
+requires = ['IPy', 'ipwhois', 'colorama', 'prettytable']
 
-version = '0.2.0b6'
+version = '0.2.1'
 
 #
 # LOAD README.md

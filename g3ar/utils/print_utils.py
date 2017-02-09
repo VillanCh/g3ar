@@ -8,6 +8,7 @@
 
 import unittest
 from colorama import init, Fore
+from prettytable import PrettyTable
 
 #----------------------------------------------------------------------
 def print_bar(text=None, basic_char='=', length=70, color=None):
@@ -77,6 +78,118 @@ def print_gray(*args):
     raw = str(args)
     init(autoreset=True)
     print((Fore.LIGHTBLACK_EX + raw))
+    
+
+#----------------------------------------------------------------------
+def print_column(head, column, color=''):
+    """Print Column With Color.
+    
+    Params:
+        head: :: A head for the column data.
+        column: :list tuple: the column data(list or tuple)
+        coler: :str: 
+            lightblack_ex
+            magenta
+            cyan
+            green
+            blue
+            yellow
+            red
+    
+    Returns:
+        return the strings of table 
+    """
+    assert isinstance(color, str)
+    
+    _prefix = ''
+    if hasattr(Fore, color.upper()):
+        _prefix = getattr(Fore, color.upper())
+    
+    table = PrettyTable()
+    table.add_column(head, column)
+    
+    raw = table.get_string()
+    init(autoreset=True)
+    print(_prefix + raw)
+    return table
+
+#----------------------------------------------------------------------
+def print_columns(heads, columns, color=''):
+    """Print Column With Color.
+    
+    Params:
+        head: :: A list of heads for the columns data.
+        column: :list tuple: the column data(list or tuple)
+        coler: :str: 
+            lightblack_ex
+            magenta
+            cyan
+            green
+            blue
+            yellow
+            red
+    
+    Returns:
+        return the strings of table 
+    """
+    assert isinstance(color, str)
+    assert len(heads) == len(columns)
+    
+    _prefix = ''
+    if hasattr(Fore, color.upper()):
+        _prefix = getattr(Fore, color.upper())
+    
+    table = PrettyTable()
+    for i in xrange(len(heads)):
+        head = heads[i]
+        column = columns[i]
+        table.add_column(head, column)
+    
+    raw = table.get_string()
+    init(autoreset=True)
+    print(_prefix + raw)
+    return table    
+    
+#----------------------------------------------------------------------
+def print_rows(heads, rows, color=''):
+    """Print Column With Color.
+    
+    Params:
+        heads: :list: the row of heads
+        rows: :list tuple: the rows data(list or tuple)
+        coler: :str: 
+            lightblack_ex
+            magenta
+            cyan
+            green
+            blue
+            yellow
+            red
+    
+    Returns:
+        return the strings of table 
+    """
+    assert len(heads) == len(rows[0])
+    assert isinstance(color, str)
+    
+    _prefix = ''
+    if hasattr(Fore, color.upper()):
+        _prefix = getattr(Fore, color.upper())
+    
+    #
+    # split rows
+    #
+    table = PrettyTable(heads)
+    for row in rows:
+        table.add_row(row)
+    
+    
+    raw = table.get_string()
+    init(autoreset=True)
+    print(_prefix + raw)
+    return table        
+
+
 
 if __name__ == '__main__':
     unittest.main()
