@@ -124,7 +124,7 @@ class ProcessTask(multiprocessing.Process):
                                       traceback.format_exc())
             else:
                 try:
-                    resultdict['result'] = i
+                    resultdict['result'] = result
                     self._result_send_pipe.send(resultdict)
                 except Exception as e:
                     warnings.warn('[?] the result cannot be send back!' + \
@@ -152,6 +152,7 @@ class ProcessTask(multiprocessing.Process):
             #print(len(self._sub_threads_list))
             #print len(self._sub_threads_list)
             threads_check_result = {}
+            threads_check_result['timestamp'] = time.time()
             threads_check_result['from'] = self._id
             for i in self._sub_threads_list:
                 threads_check_result[i.name] = i.is_alive()

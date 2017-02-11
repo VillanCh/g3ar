@@ -6,12 +6,14 @@
   Created: 2016/12/13
 """
 
+import time
 from time import sleep
 import unittest
 from multiprocessing import Pipe
 from threading import Thread
 from pprint import pprint
 from inspect import getmembers
+import tinydb
 
 from . import exceptions
 from .process_task import ProcessTask
@@ -38,7 +40,7 @@ class TaskBulter(Singleton):
         
         self._threads_update_interval = threads_update_interval
         self._closed = False
-        self._initial_deamon_threads()
+        #self._initial_deamon_threads()
     
     #----------------------------------------------------------------------
     def _daemon_start(self, name, func):
@@ -51,32 +53,77 @@ class TaskBulter(Singleton):
             ret.start()
             self._daemon_threads[name] = ret
 
-    #----------------------------------------------------------------------
-    def _initial_deamon_threads(self):
-        """"""
-        #raise NotImplemented
+    ##----------------------------------------------------------------------
+    #def _initial_deamon_threads(self):
+        #""""""
+        ##raise NotImplemented
     
-        self._daemon_start(name=UPDATE_TASK_STATUS_DAEMON,
-                     func=self._update_tasks_status)
+        #self._daemon_start(name=UPDATE_TASK_STATUS_DAEMON,
+                     #func=self._update_tasks_status)
         
-    
+    #----------------------------------------------------------------------
+    def _upload_result_table(self):
+        """"""
+        taskslist = self._result_tables.keys()
+        for task_id in taskslist:
+            self.get_result(task_id)
+        
     #----------------------------------------------------------------------
     def _update_tasks_status(self):
         """"""
-        #pprint('daemon threads started')
-        while self._closed == False:
-            for i in list(self._tasks_table.items()):
-                pipe = i[1]['status_monitor_pipe']
-                if self._tasks_table[i[0]]['process_instance'].exitcode == None:
-                    if pipe.poll():
-                        self._tasks_status[i[0]] = pipe.recv()
-                        #pprint(self._tasks_status)
-                    else:
-                        pass
-                    sleep(self._threads_update_interval/2)
-                else:
-                    self._tasks_status[i[0]] = {}
-    
+        re_update = False
+        for i in self._tasks_table.items():
+            pipe = i[1]['status_monitor_pipe']
+            #if self._tasks_table[i[0]]['process_instance'].exitcode == None:
+            last = {}
+            ret = {}
+            while pipe.poll():
+                ret = pipe.recv()
+                #ret['timestamp'] = time.time()
+            if ret != {}:
+                pass
+            else:
+                ret = {}
+            
+            if not self._tasks_status[i[0]]:
+                self._tasks_status[i[0]] = {}
+            
+            #
+            # Clean last buffer record
+            #
+            _ = self._tasks_status[i[0]].copy()
+            try:
+                del _['last']
+            except KeyError:
+                pass
+            last = _
+            
+            #
+            # record 
+            #
+            self._tasks_status[i[0]]['now'] = ret
+            if isinstance(self._tasks_status[i[0]], dict):
+                self._tasks_status[i[0]]['last'] = last
+            #else:
+            #    pass
+            
+            #
+            # Check Re-update?
+            #
+            try:
+                lasttimestamp = int(self._tasks_status[i[0]]['now']['timestamp'])
+            except KeyError:
+                lasttimestamp = int(time.time())
+                
+            if int(time.time()) - \
+               lasttimestamp \
+               <= 3:
+                re_update = False
+            else:
+                re_update = True
+        
+        if re_update:
+            self._update_tasks_status()
     
     #----------------------------------------------------------------------
     def start_task(cls, id, target, args=tuple(), kwargs={}, result_callback=None):
@@ -107,8 +154,12 @@ class TaskBulter(Singleton):
         # init tables
         #
         cls._tasks_table[id] = {}
+        cls._result_tables[id] = {}
+        cls._tasks_status[id] = {}
+        
         cls._tasks_table[id]['status_monitor_pipe'] = control_pipe
         cls._result_tables[id]['result_pipe'] = result_recv_pipe
+        cls._result_tables[id]['result'] = []
         
         #
         # Build process and run
@@ -126,6 +177,7 @@ class TaskBulter(Singleton):
     #----------------------------------------------------------------------
     def get_tasks_status(self):
         """"""
+        self._update_tasks_status()
         return self._tasks_status.copy()
     
     #----------------------------------------------------------------------
@@ -140,6 +192,19 @@ class TaskBulter(Singleton):
             return self._tasks_table[id]
         else:
             return None
+    
+    #----------------------------------------------------------------------
+    def get_result(self, task_id):
+        """"""
+        resultset = self._result_tables.get(task_id)
+        if resultset:
+            pipe = resultset.get('result_pipe')
+            if pipe:
+                while pipe.poll():
+                    resultset['result'].append(pipe.recv())
+        
+        return resultset.get('result')
+        
     
     #----------------------------------------------------------------------
     def destory_task(self, id_or_taskinstance):
@@ -161,35 +226,50 @@ class TaskBulter(Singleton):
     def close(self):
         """"""
         self._closed = True
+    
+    #----------------------------------------------------------------------
+    def destory_and_clean_task(self, id):
+        """"""
+        tasklist = []
+        if id:
+            if id in self._tasks_table.keys():
+                tasklist.append(id)
+            else:
+                return False
+        else:
+            tasklist = self._tasks_table.keys()
+        
+        for i in tasklist:
+            self.destory_task(tasklist)
+            del self._tasks_status[i]
+            del self._tasks_table[i]
+            del self._result_tables[i]
+        
+        return True
+    
+    #----------------------------------------------------------------------
+    def reset(self):
+        """"""
+        return self.destory_and_clean_task(None)
+
         
 ########################################################################
 class TaskBulterTest(unittest.case.TestCase):
-    """"""
-
+    """"""      
+    
     #----------------------------------------------------------------------
-    def test_add_task_and_kill_task(self):
-        """Constructor"""
-        TaskBulter().start_task(id='test-1', target=testfun, args=(6,))
-        #sleep(1)
-        for i in range(3):
-            pprint(TaskBulter().get_task_status())
-            
-            self.assertIsInstance(TaskBulter().get_task_by_id('test-1')['process_instance'], ProcessTask)
-            processi = TaskBulter().get_task_by_id('test-1')['process_instance']
-            sleep(1)
-        
-        TaskBulter().start_task(id='test-2', target=testfun, args=(6,))
-        processi = TaskBulter().get_task_by_id('test-2')['process_instance']
-        #processi.terminate()
-        TaskBulter().destory_task('test-2')
-        
-        for i in range(3):
-            pprint(TaskBulter().get_task_status())
-            self.assertIsInstance(TaskBulter().get_task_by_id('test-2')['process_instance'], ProcessTask)
-            sleep(1)        
-    
-    
+    def test_get_result(self):
+        """"""
+        TaskBulter().start_task('testresultrecv', result_t)
+        sleep(1)
+        pprint(TaskBulter().get_result('testresultrecv'))
 
+#----------------------------------------------------------------------
+def result_t():
+    """"""
+    for i in range(6):
+        yield i
+    
 
 if __name__ == '__main__':
     unittest.main()
