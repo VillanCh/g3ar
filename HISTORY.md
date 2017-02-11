@@ -1,3 +1,6 @@
+###Version: 0.2.2
+Add get_result to TaskBulter
+
 ###Version: 0.2.1
 Add print_utils function! It 's great to print table easily!
 

@@ -61,7 +61,13 @@ class TaskBulter(Singleton):
         #self._daemon_start(name=UPDATE_TASK_STATUS_DAEMON,
                      #func=self._update_tasks_status)
         
-    
+    #----------------------------------------------------------------------
+    def _upload_result_table(self):
+        """"""
+        taskslist = self._result_tables.keys()
+        for task_id in taskslist:
+            self.get_result(task_id)
+        
     #----------------------------------------------------------------------
     def _update_tasks_status(self):
         """"""
@@ -153,6 +159,7 @@ class TaskBulter(Singleton):
         
         cls._tasks_table[id]['status_monitor_pipe'] = control_pipe
         cls._result_tables[id]['result_pipe'] = result_recv_pipe
+        cls._result_tables[id]['result'] = []
         
         #
         # Build process and run
@@ -185,6 +192,19 @@ class TaskBulter(Singleton):
             return self._tasks_table[id]
         else:
             return None
+    
+    #----------------------------------------------------------------------
+    def get_result(self, task_id):
+        """"""
+        resultset = self._result_tables.get(task_id)
+        if resultset:
+            pipe = resultset.get('result_pipe')
+            if pipe:
+                while pipe.poll():
+                    resultset['result'].append(pipe.recv())
+        
+        return resultset.get('result')
+        
     
     #----------------------------------------------------------------------
     def destory_task(self, id_or_taskinstance):
@@ -235,32 +255,21 @@ class TaskBulter(Singleton):
         
 ########################################################################
 class TaskBulterTest(unittest.case.TestCase):
-    """"""
-
+    """"""      
+    
     #----------------------------------------------------------------------
-    def test_add_task_and_kill_task(self):
-        """Constructor"""
-        TaskBulter().start_task(id='test-1', target=testfun, args=(6,))
-        #sleep(1)
-        for i in range(3):
-            pprint(TaskBulter().get_task_status())
-            
-            self.assertIsInstance(TaskBulter().get_task_by_id('test-1')['process_instance'], ProcessTask)
-            processi = TaskBulter().get_task_by_id('test-1')['process_instance']
-            sleep(1)
-        
-        TaskBulter().start_task(id='test-2', target=testfun, args=(6,))
-        processi = TaskBulter().get_task_by_id('test-2')['process_instance']
-        #processi.terminate()
-        TaskBulter().destory_task('test-2')
-        
-        for i in range(3):
-            pprint(TaskBulter().get_task_status())
-            self.assertIsInstance(TaskBulter().get_task_by_id('test-2')['process_instance'], ProcessTask)
-            sleep(1)        
-    
-    
+    def test_get_result(self):
+        """"""
+        TaskBulter().start_task('testresultrecv', result_t)
+        sleep(1)
+        pprint(TaskBulter().get_result('testresultrecv'))
 
+#----------------------------------------------------------------------
+def result_t():
+    """"""
+    for i in range(6):
+        yield i
+    
 
 if __name__ == '__main__':
     unittest.main()
