@@ -17,7 +17,8 @@
         VERSION:     '0.x',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -25,7 +26,6 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="g3ar 0.x documentation" href="index.html" />
     <link rel="prev" title="什么是 g3ar？如何安装？" href="overview.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -44,26 +44,76 @@
             
   <div class="section" id="id1">
 <h1>功能简介<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>相信你看到这里应该是对这个东西有一些兴趣了对吧？那么我们接下来就来具体说明 g3ar
-到底包含了怎么样的功能。</p>
+<p>Python 渗透工具，或者渗透测试工具框架可能需要用到的组件：带结果反馈的线程池，支持大字典流式读取
+以及进度保存的字典解析模块，以进程方式启动并加以监视控制与结果反馈的任务管理器，带有装饰器接口的日志
+记录工具，除此之外，utils 还包含了一些有用的小工具：打印带颜色的文字，指定路径的 import 工具，
+ip 计算工具，更加方便的 Python 自省工具。</p>
 <div class="section" id="id2">
-<h2>功能清单<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>当然你可以说是大杂烩，因为事实上，g3ar 确实是这样，提供了关于渗透测试遇到的
-常见的编程问题的解决方案。比如之前提到的：</p>
-<ol class="arabic simple">
-<li>更方便高效可控的多线程处理（ThreadPool 与 Contractor）。</li>
-<li>进程管理（TaskBulter）可以做到对某个进程内的线程进行监控。</li>
-<li>大字典（百兆甚至上 G 级别）的解析与进度保存。</li>
-<li>日志装饰器：使用日志装饰器来进行日志记录，追踪关键函数的运行状况，无需手动追踪。</li>
-<li>小型工具库：比如快速自省工具（inspect_utils），关于 ip 的计算工具（ip_calc_utils）</li>
-</ol>
-<p>这些功能（工具类）都已经在 g3ar 中得到了实现，并且有了非常良好的表现，
-使用上面的几个小功能，作者很容易的构造出了一示例的密码爆破的框架，详见</p>
-<p><a class="reference external" href="https://github.com/VillanCh/minihydra">https://github.com/VillanCh/minihydra</a></p>
-<p>一个 mini 版的 hydra 但是可以自己定制插件脚本。</p>
-</div>
+<h2>线程池组件<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id3">
-<h2>其他相关连接<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h3>简介<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>线程池的出现极大的方便了密集型任务的编程，在线程池组件的帮助下，一个任务密集型的程序将会极大被简化，
+只需要维护一个稳定的任务队列并且定时从线程池的结果队列中获取任务反馈。</p>
+</div>
+<div class="section" id="quick-look">
+<h3>Quick Look<a class="headerlink" href="#quick-look" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">g3ar</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">arg1</span><span class="p">):</span>
+  <span class="c1">#</span>
+  <span class="c1"># Do something intersting</span>
+  <span class="c1">#</span>
+  <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">arg1</span>
+
+<span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">()</span>
+<span class="n">pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">pool</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">target_func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">arg1</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">queue</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_result_queue</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="n">pool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>这个最简单的例子，就是我们使用 ThreadPool 做的一个最简单的事情，也就是执行一个函数，然后再异步
+收集结果。</p>
+<p>我们分布来讲解这一段小代码：</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">g3ar</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">arg1</span><span class="p">):</span>
+  <span class="c1">#</span>
+  <span class="c1"># Do something intersting</span>
+  <span class="c1">#</span>
+  <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">arg1</span>
+</pre></div>
+</div>
+<p>导入我们需要的 ThreadPool 然后并定义一个函数。</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">()</span>
+<span class="n">pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>新建一个 ThreadPool 对象，然后开启线程池（start）。启动线程池之后，线程池对象会在内部启动若干
+个线程，然后这些线程就会进入等待状态。当任务队列中出现任务的时候，线程就会提取任务队列中的任务，
+然后执行相应的任务，把任务的执行情况放在结果队列中</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pool</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">target_func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">arg1</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>传入需要运行的函数，并且在 target_func 后输入其他的参数，例如在 func 中，arg1 是 func 的唯
+一参数，因为后面必须要写出形参的名称和形参的值。</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_result_queue</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="n">pool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>通过 pool.get_result_queue()， 获取一个 Queue.Queue 对象，这个对象是 Python 内置的对象，
+所以不做过多的说明，通过 queue.get() 来获取函数执行的结果。</p>
+<p>当获取到需要的结果之后，通过 pool.stop() 来关闭线程池。</p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>其他相关连接<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="index.html">首页</a></li>
 <li><a class="reference external" href="overview.html">总览</a></li>
@@ -81,8 +131,12 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">功能简介</a><ul>
-<li><a class="reference internal" href="#id2">功能清单</a></li>
-<li><a class="reference internal" href="#id3">其他相关连接</a></li>
+<li><a class="reference internal" href="#id2">线程池组件</a><ul>
+<li><a class="reference internal" href="#id3">简介</a></li>
+<li><a class="reference internal" href="#quick-look">Quick Look</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">其他相关连接</a></li>
 </ul>
 </li>
 </ul>
@@ -97,7 +151,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/func_quicklook.txt"
+      <li><a href="_sources/func_quicklook.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -119,11 +173,11 @@
       &copy;2017, v1ll4n.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="_sources/func_quicklook.txt"
+      <a href="_sources/func_quicklook.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
