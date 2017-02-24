@@ -1,4 +1,7 @@
 *.pyc
 *.log
 *.dat
-testdate/*
+testdate/*py2env
+py2env/*
+py3env
+py3env/*

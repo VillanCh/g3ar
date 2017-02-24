@@ -84,6 +84,134 @@ Quick Look
 
 当获取到需要的结果之后，通过 pool.stop() 来关闭线程池。
 
+你会发现，这个线程池使用起来非常的简单，事实上，简单已经是一切了对不对？
+
+大字典读取
+-----------------
+
+在进行 Python 渗透工具编写的过程中，我们经常需要用到各种各样的字典（当然不是用来查生词的字典），
+比如你有一个 300MB 的字典，你想用它去跑密码，然后整个脚本都需要在短时间内完成，这个时候应该怎么办呢？
+
+当然大家直到使用文件流去读取是最好不过的，但是实际上，可能你整天都在忙着渗透测试的业务并没有太多
+去关注编程方面的东西，那么你难道真的就那样整个把字典加载进内存？而且还很麻烦做字典分片啊，进度
+保存啊之类的基础性工作。实际上，这些工作，g3ar 都可以替你完成喔！
+
+.. code-block:: python
+
+  from g3ar import DictParser
+
+  dparser = DictParser('bigdict.txt')
+  for i in dparser:
+    #
+    # Do What you want!
+    #
+    pass
+
+看！实际的使用，就这么简单，但是然后呢？我们设想一些复杂的场景：我的字典大概跑了有 2000 条，
+然后临时有事情，我需要暂停下来，然后等我忙完了事情接下来再跑这个字典，那么应该怎么做呢？当然是有
+好办法啦！DictParser 提供了基于 session 控制的可选进度保存操作。
+
+首先我们假定我们有一个叫 demodict 的字典文件::
+
+  6666123
+  12341
+  346
+  245!#$%@#$^#
+  325
+  12341adfas
+  asd
+  re
+  yq
+  dahy
+  ar
+  r
+  34
+  awe
+  g
+  da
+  haf
+  dh
+  ad
+  s
+  dasdtdassd
+
+针对这一个字典文件，我们需要读取这个字典文件中的内容，然后并且进行进度保存，那么我们应该怎么做呢？
+
+TAKL IS CHEAP, LET ME SHOW YOU THE CODES!
+
+.. code-block:: python
+
+  from g3ar import DictParser
+  from g3ar.utils.print_utils import print_bar
+
+  #
+  # 创建一个 DictParser, 把 demosession 作为 session_id 传入 DictParser 对象中
+  #
+  dparser = DictParser(filename='demodict', session_id='demosession')
+
+  #
+  # 读取前十行：因为 DictParser 本质上是一个迭代器，所以可以使用 foreach 的形式也可以直接调用 next
+  # 去获取相应的值
+  #
+  print_bar('GET 10 LINES')
+  for i in xrange(10):
+  print(dparser.next())
+  print_bar('END')
+  print()
+
+  #
+  # 强制保存当前字典读取的进度
+  #
+  dparser.force_save()
+
+  #
+  # 删除字典（自动关闭文件）
+  #
+  del dparser
+
+  #
+  # 重新创建一个 DictParser， 然后把之前使用的 session_id 传入，然后设置 do_continue 为 True
+  # 这样得到的一个 DictParser 就是一个接着上一次读写字典进度的一个字典解析器
+  #
+  dparser_continue = DictParser(filename='demodict', session_id='demosession', do_continue=True)
+  #
+  # 那么我们现在来验证后面的字典剩下的内容是不是紧接着我们上一次保存的进度之后？
+  #
+  print_bar('GET NEXT ALL LINE')
+  for i in dparser_continue:
+  print(i)
+
+然后上面就是我们完成保存进度使用的接口，我们查看一下最终的结果来检查是不是按照我们的期望进行工作!::
+
+  =============================GET 10 LINES=============================
+  6666123
+  12341
+  346
+  245!#$%@#$^#
+  325
+  12341adfas
+  asd
+  re
+  yq
+  dahy
+  =================================END=================================
+  ()
+  ==========================GET NEXT ALL LINE==========================
+  ar
+  r
+  34
+  awe
+  g
+  da
+  haf
+  dh
+  ad
+  s
+  dasdtdassd
+
+接下来我们对比一下之前我们创建的字典文件，发现确实实现字典的进度保存。那么现在，你可以使用它
+去完成你想要的操作了！我觉得你现在可能已经想到它可以用在哪里了！
+
 其他相关连接
 ---------------------
 

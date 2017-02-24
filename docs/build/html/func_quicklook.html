@@ -110,10 +110,129 @@ ip 计算工具，更加方便的 Python 自省工具。</p>
 <p>通过 pool.get_result_queue()， 获取一个 Queue.Queue 对象，这个对象是 Python 内置的对象，
 所以不做过多的说明，通过 queue.get() 来获取函数执行的结果。</p>
 <p>当获取到需要的结果之后，通过 pool.stop() 来关闭线程池。</p>
+<p>你会发现，这个线程池使用起来非常的简单，事实上，简单已经是一切了对不对？</p>
 </div>
 </div>
 <div class="section" id="id4">
-<h2>其他相关连接<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<h2>大字典读取<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>在进行 Python 渗透工具编写的过程中，我们经常需要用到各种各样的字典（当然不是用来查生词的字典），
+比如你有一个 300MB 的字典，你想用它去跑密码，然后整个脚本都需要在短时间内完成，这个时候应该怎么办呢？</p>
+<p>当然大家直到使用文件流去读取是最好不过的，但是实际上，可能你整天都在忙着渗透测试的业务并没有太多
+去关注编程方面的东西，那么你难道真的就那样整个把字典加载进内存？而且还很麻烦做字典分片啊，进度
+保存啊之类的基础性工作。实际上，这些工作，g3ar 都可以替你完成喔！</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">g3ar</span> <span class="kn">import</span> <span class="n">DictParser</span>
+
+<span class="n">dparser</span> <span class="o">=</span> <span class="n">DictParser</span><span class="p">(</span><span class="s1">&#39;bigdict.txt&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dparser</span><span class="p">:</span>
+  <span class="c1">#</span>
+  <span class="c1"># Do What you want!</span>
+  <span class="c1">#</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+<p>看！实际的使用，就这么简单，但是然后呢？我们设想一些复杂的场景：我的字典大概跑了有 2000 条，
+然后临时有事情，我需要暂停下来，然后等我忙完了事情接下来再跑这个字典，那么应该怎么做呢？当然是有
+好办法啦！DictParser 提供了基于 session 控制的可选进度保存操作。</p>
+<p>首先我们假定我们有一个叫 demodict 的字典文件:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>6666123
+12341
+346
+245!#$%@#$^#
+325
+12341adfas
+asd
+re
+yq
+dahy
+ar
+r
+34
+awe
+g
+da
+haf
+dh
+ad
+s
+dasdtdassd
+</pre></div>
+</div>
+<p>针对这一个字典文件，我们需要读取这个字典文件中的内容，然后并且进行进度保存，那么我们应该怎么做呢？</p>
+<p>TAKL IS CHEAP, LET ME SHOW YOU THE CODES!</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">g3ar</span> <span class="kn">import</span> <span class="n">DictParser</span>
+<span class="kn">from</span> <span class="nn">g3ar.utils.print_utils</span> <span class="kn">import</span> <span class="n">print_bar</span>
+
+<span class="c1">#</span>
+<span class="c1"># 创建一个 DictParser, 把 demosession 作为 session_id 传入 DictParser 对象中</span>
+<span class="c1">#</span>
+<span class="n">dparser</span> <span class="o">=</span> <span class="n">DictParser</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;demodict&#39;</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;demosession&#39;</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># 读取前十行：因为 DictParser 本质上是一个迭代器，所以可以使用 foreach 的形式也可以直接调用 next</span>
+<span class="c1"># 去获取相应的值</span>
+<span class="c1">#</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;GET 10 LINES&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">print</span><span class="p">(</span><span class="n">dparser</span><span class="o">.</span><span class="n">next</span><span class="p">())</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;END&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">()</span>
+
+<span class="c1">#</span>
+<span class="c1"># 强制保存当前字典读取的进度</span>
+<span class="c1">#</span>
+<span class="n">dparser</span><span class="o">.</span><span class="n">force_save</span><span class="p">()</span>
+
+<span class="c1">#</span>
+<span class="c1"># 删除字典（自动关闭文件）</span>
+<span class="c1">#</span>
+<span class="k">del</span> <span class="n">dparser</span>
+
+<span class="c1">#</span>
+<span class="c1"># 重新创建一个 DictParser， 然后把之前使用的 session_id 传入，然后设置 do_continue 为 True</span>
+<span class="c1"># 这样得到的一个 DictParser 就是一个接着上一次读写字典进度的一个字典解析器</span>
+<span class="c1">#</span>
+<span class="n">dparser_continue</span> <span class="o">=</span> <span class="n">DictParser</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;demodict&#39;</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;demosession&#39;</span><span class="p">,</span> <span class="n">do_continue</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1"># 那么我们现在来验证后面的字典剩下的内容是不是紧接着我们上一次保存的进度之后？</span>
+<span class="c1">#</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;GET NEXT ALL LINE&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dparser_continue</span><span class="p">:</span>
+<span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>然后上面就是我们完成保存进度使用的接口，我们查看一下最终的结果来检查是不是按照我们的期望进行工作!:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>=============================GET 10 LINES=============================
+6666123
+12341
+346
+245!#$%@#$^#
+325
+12341adfas
+asd
+re
+yq
+dahy
+=================================END=================================
+()
+==========================GET NEXT ALL LINE==========================
+ar
+r
+34
+awe
+g
+da
+haf
+dh
+ad
+s
+dasdtdassd
+</pre></div>
+</div>
+<p>接下来我们对比一下之前我们创建的字典文件，发现确实实现字典的进度保存。那么现在，你可以使用它
+去完成你想要的操作了！我觉得你现在可能已经想到它可以用在哪里了！</p>
+</div>
+<div class="section" id="id5">
+<h2>其他相关连接<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="index.html">首页</a></li>
 <li><a class="reference external" href="overview.html">总览</a></li>
@@ -136,7 +255,8 @@ ip 计算工具，更加方便的 Python 自省工具。</p>
 <li><a class="reference internal" href="#quick-look">Quick Look</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id4">其他相关连接</a></li>
+<li><a class="reference internal" href="#id4">大字典读取</a></li>
+<li><a class="reference internal" href="#id5">其他相关连接</a></li>
 </ul>
 </li>
 </ul>
