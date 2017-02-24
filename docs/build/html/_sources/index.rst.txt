@@ -6,6 +6,8 @@
 欢迎来到 G3AR
 ================================
 
+
+
 内容:
 
 .. toctree::
@@ -13,15 +15,3 @@
 
    overview
    func_quicklook
-
-
-快速开始
--------
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -232,7 +232,81 @@ dasdtdassd
 去完成你想要的操作了！我觉得你现在可能已经想到它可以用在哪里了！</p>
 </div>
 <div class="section" id="id5">
-<h2>其他相关连接<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<h2>任务管理器<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>任务管理器其实不像是线程池那样适合高度密集任务的处理，因为进程开销显然要比线程开销大得多啊，那么
+基于这些基础的问题，我们怎么样来认识我们 g3ar 给大家提供的任务管理器呢？其实也很好解释，就是假如说
+我们需要启动两个爆破程序，每一个爆破程序会启动甚至几十个线程去进行密码爆破等操作，每一个爆破程序
+都有高密度的任务，在这些任务中，我们为这些任务启动开销相对更低的线程。对于整个的爆破程序，我们
+就以进程为单位去管理。这样做有什么好处呢？</p>
+<ol class="arabic simple">
+<li>可以监控进程内部线程的运行状况：如果关键线程发生了异常，可以立即发现，采取相应措施。</li>
+<li>可以强行结束一个进程，然而并不能强行结束一个线程。</li>
+</ol>
+<p>好的接下来，我们就来看一下，怎么样使用这些令人激动的功能吧？</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># example for taskbulter</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">g3ar</span> <span class="kn">import</span> <span class="n">TaskBulter</span>
+<span class="kn">from</span> <span class="nn">g3ar.utils.print_utils</span> <span class="kn">import</span> <span class="n">print_bar</span>
+
+<span class="c1">#</span>
+<span class="c1"># 创建一个 TaskBulter 用以准备启动新的任务</span>
+<span class="c1">#</span>
+<span class="n">tbr</span> <span class="o">=</span> <span class="n">TaskBulter</span><span class="p">()</span>
+
+<span class="c1">#</span>
+<span class="c1"># 自己定义一个 taskid 然后定一个任务函数</span>
+<span class="c1">#</span>
+<span class="n">taskid</span> <span class="o">=</span> <span class="s1">&#39;testtask-id&#39;</span>
+<span class="c1">#----------------------------------------------------------------------</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+  <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span>
+
+<span class="c1">#</span>
+<span class="c1"># 传入必须任务的 id， 传入目标函数，目标函数的参数</span>
+<span class="c1">#</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;start the task&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">tbr</span><span class="o">.</span><span class="n">start_task</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">taskid</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;arg1var&#39;</span><span class="p">,)))</span>
+
+<span class="c1">#</span>
+<span class="c1"># 查看任务执行的状态</span>
+<span class="c1">#</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;watch the status&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">tbr</span><span class="o">.</span><span class="n">get_tasks_status</span><span class="p">())</span>
+
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># 获取任务结果</span>
+<span class="c1">#</span>
+<span class="n">print_bar</span><span class="p">(</span><span class="s1">&#39;get result&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">tbr</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">taskid</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>使用起来大概也不会有什么不适，非常的简单和理所当然的接口，我想关于结果大家肯定都已经猜到了:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">============================</span><span class="n">start</span> <span class="n">the</span> <span class="n">task</span><span class="o">============================</span>
+<span class="kc">None</span>
+<span class="o">===========================</span><span class="n">watch</span> <span class="n">the</span> <span class="n">status</span><span class="o">===========================</span>
+<span class="p">{</span><span class="s1">&#39;testtask-id&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;now&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;last&#39;</span><span class="p">:</span> <span class="p">{}}}</span>
+<span class="o">==============================</span><span class="n">get</span> <span class="n">result</span><span class="o">==============================</span>
+<span class="p">[{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;exception&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;arg1var&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)}]</span>
+</pre></div>
+</div>
+<p>要说明的就是结果部分吧，可能大家会奇怪，为什么结果不是我的函数直接返回的结果，而且还被包装了一层
+又一层？</p>
+<p>这当然不是图麻烦，在后续的详细文档关于这个部分会详细解释，简单来想，原因就是：如果任务执行的过程
+中，出现了问题，那么，如果按平时仅仅返回一个结果就会显得非常突兀，有时候我们又渴望知道到底出现了
+什么异常信息，这样的话，一个格式化的输出就很有必要了。</p>
+<p>在结果输出中，整个结果是存储在一个 list 里面的，list 内是一个又一个的 dict，state 代表的是运
+行的结果是不是按照期望运行，如果出现了不期望的一场，state 则会为
+False，于此同时 exception 会记录出现的异常是什么；result 则表示函数返回的结果是什么，当然，
+如果返回了多个结果，就会出现多个 dict，因为在我们的任务可能不是 return ，还有可能是 yield。</p>
+</div>
+<div class="section" id="id6">
+<h2>其他相关连接<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="index.html">首页</a></li>
 <li><a class="reference external" href="overview.html">总览</a></li>
@@ -256,7 +330,8 @@ dasdtdassd
 </ul>
 </li>
 <li><a class="reference internal" href="#id4">大字典读取</a></li>
-<li><a class="reference internal" href="#id5">其他相关连接</a></li>
+<li><a class="reference internal" href="#id5">任务管理器</a></li>
+<li><a class="reference internal" href="#id6">其他相关连接</a></li>
 </ul>
 </li>
 </ul>
