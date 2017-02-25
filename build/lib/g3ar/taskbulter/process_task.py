@@ -204,10 +204,10 @@ class ProcessTaskTest(unittest.case.TestCase):
         
         threads_status = pipp.recv()
         self.assertIsInstance(threads_status, dict)
-        print pipr.recv()
-        print pipr.recv()
-        print pipr.recv()
-        print pipr.recv()
+        #print pipr.recv()
+        #print pipr.recv()
+        #print pipr.recv()
+        #print pipr.recv()
         self.print_end_bar()
         
         

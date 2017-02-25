@@ -15,6 +15,25 @@ from hashlib import md5
 SESSION_TABLE_FILE = 'sessions_dat'
 DEFAULT_SESSION_ID = 'default'
 
+#----------------------------------------------------------------------
+def get_progress(shelvefile, key):
+    """"""
+    ret = shelve.open(shelvefile)
+    temp = ret.get(key)
+    ret.close()
+    return temp
+
+#----------------------------------------------------------------------
+def set_progress(shelvefile, key, value):
+    """"""
+    ret = shelve.open(shelvefile)
+    ret[key] = value
+    ret.close()
+    
+
+
+
+
 ########################################################################
 class DictParser(object):
     """"""
@@ -47,11 +66,13 @@ class DictParser(object):
         except:
             os.remove(os.path.abspath(self._session_data_file))
             self._session_progress_table = shelve.open(os.path.abspath(self._session_data_file))
+        finally:
+            self._session_progress_table.close()
         # continue last task
         if do_continue:
             if self._session_id in self._session_progress_table:
                 try:
-                    pos = self._session_progress_table[self._session_id]
+                    pos = get_progress(self._session_data_file, self._session_id)
                 except ValueError:
                     pos = 0
                 self._dict_file_p.seek(pos)
@@ -101,7 +122,8 @@ class DictParser(object):
     #----------------------------------------------------------------------
     def _save(self):
         """Save the progress"""
-        self._session_progress_table[self._session_id] = self._dict_file_p.tell()
+        #self._session_progress_table[self._session_id] = self._dict_file_p.tell()
+        set_progress(self._session_data_file, self._session_id, self._dict_file_p.tell())
      
     #----------------------------------------------------------------------
     def force_save(self):
@@ -113,10 +135,16 @@ class DictParser(object):
     def __del__(self):
         """Close the opened resource"""
         try:
-            self._dict_file_p.close()
-            self._session_progress_table.close()
+            self.close()
+            #self._session_progress_table.close()
         except AttributeError:
             pass
+    
+    #----------------------------------------------------------------------
+    def close(self):
+        """"""
+        self._dict_file_p.close()
+        
  
     #----------------------------------------------------------------------
     def get_next_collection(self, num=200):
