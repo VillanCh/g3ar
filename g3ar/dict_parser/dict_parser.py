@@ -9,6 +9,7 @@
 import pickle
 import unittest
 import os
+from codecs import open
 from pprint import pprint
 from hashlib import md5
 
@@ -26,14 +27,21 @@ def get_buffer(shelvefile, key=None):
         else:
             set_buffer(shelvefile, key='default', value=0)
     
-    with open(shelvefile) as fp:
-        text = fp.read()
-        pdict = pickle.loads(text)
-        assert isinstance(pdict, dict)
-        if key:
-            result = pdict.get(key)
+    with open(shelvefile, encoding='utf-8', errors='ignore') as fp:
+        try:
+            text = fp.read()
+        except:
+            if key:
+                result = None
+            else:
+                result = {}
         else:
-            result = pdict
+            pdict = pickle.loads(text)
+            assert isinstance(pdict, dict)
+            if key:
+                result = pdict.get(key)
+            else:
+                result = pdict
     
     return result
 
@@ -45,7 +53,7 @@ def set_buffer(shelvefile, key, value):
     pdict[key] = value
     text = pickle.dumps(pdict)
     
-    with open(shelvefile, 'wb') as fp:
+    with open(shelvefile, 'wb', encoding='utf-8', errors='ignore') as fp:
         fp.write(text)
 
 
