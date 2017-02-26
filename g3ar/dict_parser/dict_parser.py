@@ -27,21 +27,23 @@ def get_buffer(shelvefile, key=None):
         else:
             set_buffer(shelvefile, key='default', value=0)
     
-    with open(shelvefile, encoding='utf-8', errors='ignore') as fp:
+    with open(shelvefile, 'rb',) as fp:
         try:
             text = fp.read()
-        except:
-            if key:
-                result = None
-            else:
-                result = {}
-        else:
             pdict = pickle.loads(text)
             assert isinstance(pdict, dict)
             if key:
                 result = pdict.get(key)
             else:
-                result = pdict
+                result = pdict            
+        except:
+            if key:
+                
+                result = None
+            else:
+                result = {}
+
+
     
     return result
 
@@ -49,11 +51,15 @@ def get_buffer(shelvefile, key=None):
 #----------------------------------------------------------------------
 def set_buffer(shelvefile, key, value):
     """"""
-    pdict = {}
+    if os.path.exists(shelvefile):
+        pdict = get_buffer(shelvefile)
+    else:
+        pdict = {}
+    
     pdict[key] = value
     text = pickle.dumps(pdict)
     
-    with open(shelvefile, 'wb', encoding='utf-8', errors='ignore') as fp:
+    with open(shelvefile, 'wb') as fp:
         fp.write(text)
 
 
@@ -248,7 +254,7 @@ class TESTer(unittest.case.TestCase):
         """"""
         dp = DictParser(filename='./testdict/subnames_largest.txt', do_continue=True)
         
-        for i in xrange(10):
+        for i in range(10):
             print(dp.next())
             
 

@@ -13,14 +13,14 @@ packages = find_packages()
 
 requires = ['IPy', 'ipwhois', 'colorama', 'prettytable']
 
-version = '0.2.6'
+version = '0.2.7'
 
 #
 # LOAD README.md
 #
 try:
     readme = None
-    with copen('README.md', encoding='utf-8') as f:
+    with copen('README.md',  encoding='utf-8') as f:
         readme = f.read()
 
     history = None
