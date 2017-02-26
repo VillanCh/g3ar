@@ -26,7 +26,7 @@ from g3ar import Contractor
 from g3ar import TaskBulter
 from g3ar import ThreadPool
 from g3ar import DecoLogger
-from g3ar.dict_parser import *
+from g3ar.dict_parser import DictParser
 from g3ar.utils.import_utils import *
 from g3ar.utils.inspect_utils import *
 #from g3ar.utils.ip_calc_utils import *

@@ -1,0 +1,2 @@
+2017-02-24 11:26:25,093-testlogger.critical-CRITICAL: Hello Critical -- [process_id:25243][thread_name:MainThread-id:140736836027328]
+2017-02-24 11:40:45,758-testlogger.critical-CRITICAL: Hello Critical -- [process_id:26545][thread_name:MainThread-id:140736836027328]
