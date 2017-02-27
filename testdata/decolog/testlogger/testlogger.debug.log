@@ -1,2 +1,6 @@
 2017-02-26 10:11:52,290-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:45708][thread_name:MainThread-id:140736836027328]
 2017-02-26 10:11:52,291-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:45708][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:21,333-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:61953][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:21,334-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:61953][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:50,016-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:62060][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:50,016-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:62060][thread_name:MainThread-id:140736836027328]
