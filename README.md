@@ -334,10 +334,3 @@ None
 行的结果是不是按照期望运行，如果出现了不期望的一场，state 则会为
 False，于此同时 exception 会记录出现的异常是什么；result 则表示函数返回的结果是什么，当然，
 如果返回了多个结果，就会出现多个 dict，因为在我们的任务可能不是 return ，还有可能是 yield。
-
-其他相关连接
----------------------
-
-* `首页 <index.html>`_
-* `总览 <overview.html>`_
-* `功能简介 <func_quicklook.html>`_
