@@ -1,3 +1,6 @@
+###Version: 0.0.7
+ThreadPool 与 DictParser 的稳定性得到极大提升
+
 ###Version: 0.2.2
 Add get_result to TaskBulter
 

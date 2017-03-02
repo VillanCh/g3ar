@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: g3ar
-Version: 0.2.7
+Version: 0.2.8
 Summary: Python Coding Toolkit for Pentester.
 Home-page: https://github.com/VillanCh/g3ar
 Author: v1ll4n
@@ -31,7 +31,7 @@ Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
         
         ### By pip
         
-        	pip install g3ar
+        		pip install g3ar
         
         ### By easy_install
         
@@ -39,15 +39,313 @@ Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
         
         ### By Github：
         
-        	git clone https://github.com/VillanCh/g3ar.git
-          cd g3ar
-        	pip install -r requirements.txt
-        	python setup.py install
+        
+        		git clone https://github.com/VillanCh/g3ar.git
+          	cd g3ar
+        		pip install -r requirements.txt
+        		python setup.py install
         
         ## 帮助手册与 Quick Look
         
-        查看 `docs/build/html/index.html`
+        查看当前 repos 下 `docs/build/html/index.html` 获取更多帮助信息
         
+        ### 功能简介
+        
+        Python 渗透工具，或者渗透测试工具框架可能需要用到的组件：带结果反馈的线程池，支持大字典流式读取
+        以及进度保存的字典解析模块，以进程方式启动并加以监视控制与结果反馈的任务管理器，带有装饰器接口的日志
+        记录工具，除此之外，utils 还包含了一些有用的小工具：打印带颜色的文字，指定路径的 import 工具，
+        ip 计算工具，更加方便的 Python 自省工具。
+        
+        #### 线程池组件
+        
+        ##### 简介
+        
+        线程池的出现极大的方便了密集型任务的编程，在线程池组件的帮助下，一个任务密集型的程序将会极大被简化，
+        只需要维护一个稳定的任务队列并且定时从线程池的结果队列中获取任务反馈。
+        
+        ##### Quick Look
+        
+        ```
+        import time
+        from g3ar import ThreadPool
+        
+        def func(arg1):
+          #
+          # Do something intersting
+          #
+          time.sleep(5)
+          return arg1
+        
+        pool = ThreadPool()
+        pool.start()
+        pool.feed(target_func=func, arg1=4)
+        queue = pool.get_result_queue()
+        result = queue.get()
+        print(result)
+        pool.stop()
+        ```
+        
+        这个最简单的例子，就是我们使用 ThreadPool 做的一个最简单的事情，也就是执行一个函数，然后再异步
+        收集结果。
+        
+        我们分别来讲解这一段小代码：
+        
+        ```
+        from g3ar import ThreadPool
+        def func(arg1):
+          #
+          # Do something intersting
+          #
+          time.sleep(5)
+          return arg1
+        ```
+        
+        导入我们需要的 ThreadPool 然后并定义一个函数。
+        
+        ```
+          pool = ThreadPool()
+          pool.start()
+        ```
+        新建一个 ThreadPool 对象，然后开启线程池（start）。启动线程池之后，线程池对象会在内部启动若干
+        个线程，然后这些线程就会进入等待状态。当任务队列中出现任务的时候，线程就会提取任务队列中的任务，
+        然后执行相应的任务，把任务的执行情况放在结果队列中
+        
+        
+        ```
+        pool.feed(target_func=func, arg1=4)
+        ```
+        传入需要运行的函数，并且在 target_func 后输入其他的参数，例如在 func 中，arg1 是 func 的唯
+        一参数，因为后面必须要写出形参的名称和形参的值。
+        
+        
+        ```
+        queue = pool.get_result_queue()
+        result = queue.get()
+        print(result)
+        pool.stop()
+        ```
+        
+        
+        通过 pool.get_result_queue()， 获取一个 Queue.Queue 对象，这个对象是 Python 内置的对象，
+        所以不做过多的说明，通过 queue.get() 来获取函数执行的结果。
+        
+        当获取到需要的结果之后，通过 pool.stop() 来关闭线程池。
+        
+        你会发现，这个线程池使用起来非常的简单，事实上，简单已经是一切了对不对？
+        
+        #### 大字典读取
+        
+        在进行 Python 渗透工具编写的过程中，我们经常需要用到各种各样的字典（当然不是用来查生词的字典），
+        比如你有一个 300MB 的字典，你想用它去跑密码，然后整个脚本都需要在短时间内完成，这个时候应该怎么办呢？
+        
+        当然大家直到使用文件流去读取是最好不过的，但是实际上，可能你整天都在忙着渗透测试的业务并没有太多
+        去关注编程方面的东西，那么你难道真的就那样整个把字典加载进内存？而且还很麻烦做字典分片啊，进度
+        保存啊之类的基础性工作。实际上，这些工作，g3ar 都可以替你完成喔！
+        
+        ```
+        from g3ar import DictParser
+        
+        dparser = DictParser('bigdict.txt')
+        for i in dparser:
+          #
+          # Do What you want!
+          #
+          pass
+        ```
+        
+        看！实际的使用，就这么简单，但是然后呢？我们设想一些复杂的场景：我的字典大概跑了有 2000 条，
+        然后临时有事情，我需要暂停下来，然后等我忙完了事情接下来再跑这个字典，那么应该怎么做呢？当然是有
+        好办法啦！DictParser 提供了基于 session 控制的可选进度保存操作。
+        
+        首先我们假定我们有一个叫 demodict 的字典文件::
+        
+        ```
+        6666123
+        12341
+        346
+        245!#$%@#$^#
+        325
+        12341adfas
+        asd
+        re
+        yq
+        dahy
+        ar
+        r
+        34
+        awe
+        g
+        da
+        haf
+        dh
+        ad
+        s
+        dasdtdassd
+        ```
+        
+        针对这一个字典文件，我们需要读取这个字典文件中的内容，然后并且进行进度保存，那么我们应该怎么做呢？
+        
+        ##### TAKL IS CHEAP, LET ME SHOW YOU THE CODES!
+        
+        ```
+        from g3ar import DictParser
+        from g3ar.utils.print_utils import print_bar
+        
+        #
+        # 创建一个 DictParser, 把 demosession 作为 session_id 传入 DictParser 对象中
+        #
+        dparser = DictParser(filename='demodict', session_id='demosession')
+        
+        #
+        # 读取前十行：因为 DictParser 本质上是一个迭代器，所以可以使用 foreach 的形式也可以直接调用 next
+        # 去获取相应的值
+        #
+        print_bar('GET 10 LINES')
+        for i in xrange(10):
+        print(dparser.next())
+        print_bar('END')
+        print()
+        
+        #
+        # 强制保存当前字典读取的进度
+        #
+        dparser.force_save()
+        
+        #
+        # 删除字典（自动关闭文件）
+        #
+        del dparser
+        
+        #
+        # 重新创建一个 DictParser， 然后把之前使用的 session_id 传入，然后设置 do_continue 为 True
+        # 这样得到的一个 DictParser 就是一个接着上一次读写字典进度的一个字典解析器
+        #
+        dparser_continue = DictParser(filename='demodict', session_id='demosession', do_continue=True)
+        #
+        # 那么我们现在来验证后面的字典剩下的内容是不是紧接着我们上一次保存的进度之后？
+        #
+        print_bar('GET NEXT ALL LINE')
+        for i in dparser_continue:
+        print(i)
+        ```
+        
+        
+        然后上面就是我们完成保存进度使用的接口，我们查看一下最终的结果来检查是不是按照我们的期望进行工作!
+        
+        ```
+        =============================GET 10 LINES=============================
+        6666123
+        12341
+        346
+        245!#$%@#$^#
+        325
+        12341adfas
+        asd
+        re
+        yq
+        dahy
+        =================================END=================================
+        ()
+        ==========================GET NEXT ALL LINE==========================
+        ar
+        r
+        34
+        awe
+        g
+        da
+        haf
+        dh
+        ad
+        s
+        dasdtdassd
+        ```
+        
+        接下来我们对比一下之前我们创建的字典文件，发现确实实现字典的进度保存。那么现在，你可以使用它
+        去完成你想要的操作了！我觉得你现在可能已经想到它可以用在哪里了！
+        
+        #### 任务管理器
+        
+        任务管理器其实不像是线程池那样适合高度密集任务的处理，因为进程开销显然要比线程开销大得多啊，那么
+        基于这些基础的问题，我们怎么样来认识我们 g3ar 给大家提供的任务管理器呢？其实也很好解释，就是假如说
+        我们需要启动两个爆破程序，每一个爆破程序会启动甚至几十个线程去进行密码爆破等操作，每一个爆破程序
+        都有高密度的任务，在这些任务中，我们为这些任务启动开销相对更低的线程。对于整个的爆破程序，我们
+        就以进程为单位去管理。这样做有什么好处呢？
+        
+        1. 可以监控进程内部线程的运行状况：如果关键线程发生了异常，可以立即发现，采取相应措施。
+        2. 可以强行结束一个进程，然而并不能强行结束一个线程。
+        
+        好的接下来，我们就来看一下，怎么样使用这些令人激动的功能吧？
+        
+        ```
+        #
+        # example for taskbulter
+        #
+        import time
+        from g3ar import TaskBulter
+        from g3ar.utils.print_utils import print_bar
+        
+        #
+        # 创建一个 TaskBulter 用以准备启动新的任务
+        #
+        tbr = TaskBulter()
+        
+        #
+        # 自己定义一个 taskid 然后定一个任务函数
+        #
+        taskid = 'testtask-id'
+        #----------------------------------------------------------------------
+        def func(arg1, arg2='1'):
+          """"""
+          time.sleep(2)
+          return arg1, arg2
+        
+        #
+        # 传入必须任务的 id， 传入目标函数，目标函数的参数
+        #
+        print_bar('start the task')
+        print(tbr.start_task(id=taskid, target=func, args=('arg1var',)))
+        
+        #
+        # 查看任务执行的状态
+        #
+        print_bar('watch the status')
+        print(tbr.get_tasks_status())
+        
+        time.sleep(3)
+        
+        #
+        # 获取任务结果
+        #
+        print_bar('get result')
+        print(tbr.get_result(taskid))
+        ```
+        
+        使用起来大概也不会有什么不适，非常的简单和理所当然的接口，我想关于结果大家肯定都已经猜到了
+        
+        ```
+        ============================start the task============================
+        None
+        ===========================watch the status===========================
+        {'testtask-id': {'now': {}, 'last': {}}}
+        ==============================get result==============================
+        [{'state': True, 'exception': '', 'result': ('arg1var', '1')}]
+        ```
+        
+        要说明的就是结果部分吧，可能大家会奇怪，为什么结果不是我的函数直接返回的结果，而且还被包装了一层
+        又一层？
+        
+        这当然不是图麻烦，在后续的详细文档关于这个部分会详细解释，简单来想，原因就是：如果任务执行的过程
+        中，出现了问题，那么，如果按平时仅仅返回一个结果就会显得非常突兀，有时候我们又渴望知道到底出现了
+        什么异常信息，这样的话，一个格式化的输出就很有必要了。
+        
+        在结果输出中，整个结果是存储在一个 list 里面的，list 内是一个又一个的 dict，state 代表的是运
+        行的结果是不是按照期望运行，如果出现了不期望的一场，state 则会为
+        False，于此同时 exception 会记录出现的异常是什么；result 则表示函数返回的结果是什么，当然，
+        如果返回了多个结果，就会出现多个 dict，因为在我们的任务可能不是 return ，还有可能是 yield。
+        
+        
+        ###Version: 0.0.7
+        ThreadPool 与 DictParser 的稳定性得到极大提升
         
         ###Version: 0.2.2
         Add get_result to TaskBulter
