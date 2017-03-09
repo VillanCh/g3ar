@@ -142,7 +142,7 @@ def iter_mix(*args):
         for i in astt:
             mod.body.append(i)    
     
-    exec compile(mod, '<string>', 'exec')
+    exec(compile(mod, '<string>', 'exec'))
     return dynamic_func(*args)
 
 

@@ -1,0 +1,3 @@
+2017-02-26 10:11:52,291-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:45708][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:21,333-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:61953][thread_name:MainThread-id:140736836027328]
+2017-02-26 10:54:50,016-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:62060][thread_name:MainThread-id:140736836027328]
