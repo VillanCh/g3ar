@@ -1,4 +1,7 @@
-###Version: 0.0.7
+###Version: 0.3.1
+New feature! 融合字典！
+
+###Version: 0.2.7
 ThreadPool 与 DictParser 的稳定性得到极大提升
 
 ###Version: 0.2.2

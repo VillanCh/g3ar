@@ -15,6 +15,7 @@ from .dict_parser import dict_parser
 from .taskbulter import task_bulter
 #from .utils import ip_calc_utils
 from .utils.pyping import pyping
+from .utils.iter_utils import iter_mix
 
 ThreadPool = thread_pool.Pool
 Contractor = contractor.Contractor
@@ -28,3 +29,12 @@ TaskBulter = task_bulter.TaskBulter
 def ping(host, timeout=2, count=4):
     """"""
     return pyping(host, timeout, count)
+
+#----------------------------------------------------------------------
+def dict_parser_mixer(*args):
+    """"""
+    for i in args:
+        assert isinstance(i, DictParser)
+    
+    return iter_mix(*args)
+    
