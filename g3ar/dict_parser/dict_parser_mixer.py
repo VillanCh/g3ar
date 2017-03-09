@@ -8,7 +8,7 @@
 
 import unittest
 
-from dict_parser import DictParser
+from .dict_parser import DictParser
 from ..utils.iter_utils import iter_mix
 
 

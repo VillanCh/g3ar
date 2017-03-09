@@ -1,3 +1,6 @@
+###Version: 0.3.6
+Fix bugs!
+
 ###Version: 0.3.1
 New feature! 融合字典！
 
