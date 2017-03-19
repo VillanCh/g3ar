@@ -1,3 +1,6 @@
+###Version: 0.3.7
+融合字典的进度总值错误
+
 ###Version: 0.3.6
 Fix bugs!
 

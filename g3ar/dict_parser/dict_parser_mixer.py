@@ -86,7 +86,7 @@ class DictParserMixer(object):
     #----------------------------------------------------------------------
     def get_total_size(self):
         """"""
-        return sum(self.get_total_sizes())
+        return reduce(lambda x,y: x * y, map(int, self.get_total_sizes()))
 
     #----------------------------------------------------------------------
     def close(self):
