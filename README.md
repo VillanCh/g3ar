@@ -194,7 +194,7 @@ dparser = DictParser(filename='demodict', session_id='demosession')
 #
 print_bar('GET 10 LINES')
 for i in xrange(10):
-print(dparser.next())
+	print(dparser.next())
 print_bar('END')
 print()
 
@@ -218,7 +218,7 @@ dparser_continue = DictParser(filename='demodict', session_id='demosession', do_
 #
 print_bar('GET NEXT ALL LINE')
 for i in dparser_continue:
-print(i)
+	print(i)
 ```
 
 
