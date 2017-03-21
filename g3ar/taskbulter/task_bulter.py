@@ -13,7 +13,6 @@ from multiprocessing import Pipe
 from threading import Thread
 from pprint import pprint
 from inspect import getmembers
-import tinydb
 
 from . import exceptions
 from .process_task import ProcessTask
