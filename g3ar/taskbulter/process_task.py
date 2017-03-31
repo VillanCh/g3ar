@@ -134,6 +134,11 @@ class ProcessTask(multiprocessing.Process):
             resultdict['exception'] = traceback.format_exc()
             self._result_send_pipe.send(resultdict)
         
+        #
+        # close result pipe
+        #
+        self._result_send_pipe.close()
+        
     #----------------------------------------------------------------------
     def _enum_threads(self):
         """"""
