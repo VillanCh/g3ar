@@ -1,0 +1,8 @@
+2017-03-09 20:46:28,915-testlogger.critical-CRITICAL: Hello Critical -- [process_id:46641][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:46:28,916-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:46641][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:46:28,917-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:46641][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:46:28,917-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:46641][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:47:34,449-testlogger.critical-CRITICAL: Hello Critical -- [process_id:46749][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:47:34,449-testlogger.debug-DEBUG: Into: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:46749][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:47:34,450-testlogger.info-INFO: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] Be Called -- [process_id:46749][thread_name:MainThread-id:140735836132288]
+2017-03-09 20:47:34,450-testlogger.debug-DEBUG: Out of: [Module:g3ar.decologger.g3ar.decologger.decologger FunctionName:B] -- [process_id:46749][thread_name:MainThread-id:140735836132288]

@@ -1,3 +1,6 @@
+###Version: 0.4.3
+添加从 list set tuple 和 string 中建立 DictParser 的类 （DictParserFromIter）
+
 ###Version: 0.4.0a
 当 TaskBulter 执行任务完毕的时候，关闭管道
 

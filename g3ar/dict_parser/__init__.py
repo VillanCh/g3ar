@@ -9,6 +9,7 @@
 from . import dict_parser
 from .dict_parser import *
 from .dict_parser_mixer import DictParser
+from .dict_parser_from_iter import DictParserFromIter
 
 def get_dictparser(filename, 
                    session_id=DEFAULT_SESSION_ID, 

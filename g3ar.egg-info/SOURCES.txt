@@ -11,6 +11,7 @@ g3ar/decologger/decologger.py
 g3ar/decologger/test.py
 g3ar/dict_parser/__init__.py
 g3ar/dict_parser/dict_parser.py
+g3ar/dict_parser/dict_parser_from_iter.py
 g3ar/dict_parser/dict_parser_mixer.py
 g3ar/dict_parser/test.py
 g3ar/taskbulter/__init__.py

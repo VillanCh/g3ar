@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: g3ar
-Version: 0.4.0a0
+Version: 0.4.3
 Summary: Python Coding Toolkit for Pentester.
 Home-page: https://github.com/VillanCh/g3ar
 Author: v1ll4n
@@ -343,6 +343,9 @@ Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
         False，于此同时 exception 会记录出现的异常是什么；result 则表示函数返回的结果是什么，当然，
         如果返回了多个结果，就会出现多个 dict，因为在我们的任务可能不是 return ，还有可能是 yield。
         
+        
+        ###Version: 0.4.3
+        添加从 list set tuple 和 string 中建立 DictParser 的类 （DictParserFromIter）
         
         ###Version: 0.4.0a
         当 TaskBulter 执行任务完毕的时候，关闭管道
