@@ -1,3 +1,6 @@
+###Version: 0.5.0
+增加 ThreadPoolX 一个以回调为基础的更加强大的线程池
+
 ###Version: 0.4.3
 添加从 list set tuple 和 string 中建立 DictParser 的类 （DictParserFromIter）
 

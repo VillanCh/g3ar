@@ -21,7 +21,9 @@ g3ar/taskbulter/task_bulter.py
 g3ar/taskbulter/utils_class.py
 g3ar/threadutils/__init__.py
 g3ar/threadutils/contractor.py
+g3ar/threadutils/tests.py
 g3ar/threadutils/thread_pool.py
+g3ar/threadutils/threadpoolex.py
 g3ar/utils/__init__.py
 g3ar/utils/import_utils.py
 g3ar/utils/inspect_utils.py

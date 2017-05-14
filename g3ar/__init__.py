@@ -8,7 +8,8 @@
 
 import unittest
 
-from .threadutils.thread_pool import Pool as ThreadPool 
+from .threadutils.thread_pool import Pool as ThreadPool
+from .threadutils.threadpoolex import ThreadPoolX
 from .threadutils.contractor import Contractor
 from .decologger.decologger import Decologger as DecoLogger
 from .dict_parser.dict_parser import DictParser
