@@ -10,7 +10,10 @@ from __future__ import unicode_literals
 
 import uuid
 import threading
-import queue
+try:
+    import queue
+except:
+    import Queue as queue
 import time
 import random
 
