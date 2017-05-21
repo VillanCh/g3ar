@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 import uuid
 import threading
+import traceback
 try:
     import queue
 except:
@@ -20,6 +21,7 @@ import random
 class LaborQuit(Exception):
     pass
 
+_callback_chain_lock = threading.Lock()
 
 ########################################################################
 class ThreadPoolXLabor(threading.Thread):
@@ -52,11 +54,13 @@ class ThreadPoolXLabor(threading.Thread):
         # private attributes
         #
         self._task_buffer = queue.Queue(1)
-        self._callback_chains = []
+        self._callback_chains_ = []
         self._exception_handle_callback_chains = []
 
-        self._cb_c_buffer = self._callback_chains
+        self._cb_c_buffer = self._callback_chains_
         self._ehcb_c_buffer = self._exception_handle_callback_chains
+        
+        self._inuse = False
 
     #----------------------------------------------------------------------
     def run(self):
@@ -65,6 +69,8 @@ class ThreadPoolXLabor(threading.Thread):
             self._run()
         except LaborQuit as e:
             pass
+        
+        #print(self.name, 'exited!')
 
     #----------------------------------------------------------------------
     def _run(self):
@@ -75,7 +81,8 @@ class ThreadPoolXLabor(threading.Thread):
             # if quit, before get task
             #
             if self._waiting_quit:
-                self._quit()
+                if self._task_buffer.qsize() <= 0:
+                    self._quit()
             #
             # get task from task_buffer
             # 
@@ -95,14 +102,18 @@ class ThreadPoolXLabor(threading.Thread):
                 exc = None
                 try:
                     _result = _callabled(*_vargs, **_kwargs)
+                    
                     self._handle_result(_result)
+
 
                     #
                     # recovery callback chains
                     #
                     if self._cb_cached:
                         self._recovery_cb_chain()
+                        self._cb_cached = False
                 except Exception as e:
+                    
                     self._handle_exception(e)
 
                     #
@@ -110,10 +121,14 @@ class ThreadPoolXLabor(threading.Thread):
                     #
                     if self._ecb_cached:
                         self._recovery_ecb_chain()
+                        self._ecb_cached = False
+                
+                self.inuse = False
 
             else:
                 if self._waiting_quit:
-                    self._quit()
+                    if self._task_buffer.qsize() == 0:
+                        self._quit()
                 time.sleep(self.loop_interval)
 
     #----------------------------------------------------------------------
@@ -124,6 +139,17 @@ class ThreadPoolXLabor(threading.Thread):
             return False
         else:
             return True
+    
+    @property
+    def inuse(self):
+        """"""
+        return self._inuse
+    
+    @inuse.setter
+    def inuse(self, flag):
+        """"""
+        self._inuse = flag
+        
 
     #----------------------------------------------------------------------
     def _handle_exception(self, exception_obj):
@@ -137,7 +163,15 @@ class ThreadPoolXLabor(threading.Thread):
                 raise e
         else:
             for i in self._exception_handle_callback_chains:
-                e = i(e)         
+                e = i(e)
+    
+    @property
+    def cb_chain(self):
+        """"""
+        #if isinstance(self._callback_chains_, list):
+        return self._callback_chains_
+        #else:
+        #   return self._cb_c_buffer
 
     #----------------------------------------------------------------------
     def _handle_result(self, result):
@@ -146,8 +180,9 @@ class ThreadPoolXLabor(threading.Thread):
 
         #
         # process result callback
-        #
-        for i in self._callback_chains:
+        #        
+        _cs = self.cb_chain
+        for i in _cs:
 
             _cb = i[0]
             _exc_cb = i[1]
@@ -161,7 +196,7 @@ class ThreadPoolXLabor(threading.Thread):
                 if _exc_cb:
                     _result = _exc_cb(_result)
                 else:
-                    pass        
+                    raise e        
 
 
     #----------------------------------------------------------------------
@@ -179,7 +214,7 @@ class ThreadPoolXLabor(threading.Thread):
         """result callback function"""
         assert callable(callback), 'callback cannot be called'
 
-        self._callback_chains.append((callback, exception_callback))
+        self._callback_chains_.append((callback, exception_callback))
 
     #----------------------------------------------------------------------
     def add_task_exception_callback(self, callback):
@@ -230,6 +265,8 @@ class ThreadPoolXLabor(threading.Thread):
         # execute called
         #
         self._execute(target, var_args, keyword_args)
+        
+        self.quit()
 
 
     #----------------------------------------------------------------------
@@ -248,13 +285,15 @@ class ThreadPoolXLabor(threading.Thread):
         #
         if callback_chain:
             self._cache_cb_chain()
-            self._callback_chains = callback_chain
+            self._callback_chains_ = callback_chain
 
         if error_callback_chains:
             self._cache_ecb_chain()
             self._exception_handle_callback_chains = error_callback_chains
 
         self._execute(target, var_args, keyword_args)
+        
+        self.quit()
 
     #----------------------------------------------------------------------
     def _cache_cb_chain(self):
@@ -262,7 +301,7 @@ class ThreadPoolXLabor(threading.Thread):
         #
         # cache callback
         #
-        self._cb_c_buffer = self._callback_chains
+        self._cb_c_buffer = self._callback_chains_
 
         #
         # change flag
@@ -272,13 +311,13 @@ class ThreadPoolXLabor(threading.Thread):
         #
         # reset chains
         #
-        self._callback_chains = []
+        self._callback_chains_ = []
 
     #----------------------------------------------------------------------
     def _recovery_cb_chain(self):
         """"""
         self._cb_cached = False
-        self._callback_chains = self._cache_cb_chain
+        self._callback_chains_ = self._cb_c_buffer
 
 
     #----------------------------------------------------------------------
@@ -319,8 +358,8 @@ class _LaborFactory(object):
         self._loop_interval = loop_interval
         self._debug = debug
 
-        self.callback_chains = []
-        self.exception_callback_chains = []
+        self._callback_chains = []
+        self._exception_callback_chains = []
 
     #----------------------------------------------------------------------
     def add_callbacks(self, callback, callback_exc=None):
@@ -328,27 +367,37 @@ class _LaborFactory(object):
         assert callable(callback), 'callback not callable'
         assert callback_exc == None or callable(callback_exc), 'result exception callback not callable.'
 
-        self.callback_chains.append(tuple([callback, callback_exc]))
+        self._callback_chains.append(tuple([callback, callback_exc]))
 
     #----------------------------------------------------------------------
     def add_callback_chain(self, callback_chain):
         """"""
         assert isinstance(callback_chain, list), 'callback chain must be list'
-        self.callback_chains = callback_chain
+        self._callback_chains = callback_chain
 
     #----------------------------------------------------------------------
     def add_exception_callback(self, callback):
         """"""
         assert callable(callback), 'exception callback cannot be called'
 
-        self.exception_callback_chains.append(callback)
+        self._exception_callback_chains.append(callback)
 
     #----------------------------------------------------------------------
     def add_exception_callback_chain(self, callback_chain):
         """"""
         assert isinstance(callback_chain, list), 'callback chain must be list'
 
-        self.exception_callback_chains = callback_chain
+        self._exception_callback_chains = callback_chain
+
+    @property
+    def callback_chains(self):
+        """"""
+        return self._callback_chains
+    
+    @property
+    def exception_callback_chains(self):
+        """"""
+        return self._exception_callback_chains
 
     #----------------------------------------------------------------------
     def build_labor(self):
@@ -357,6 +406,7 @@ class _LaborFactory(object):
         _lb = self.Labor(name=self.gen_labor_name(), 
                          debug=self._debug, 
                          loop_interval=self._loop_interval)
+        _lb.daemon = True
 
         #
         # add result callback
@@ -375,8 +425,8 @@ class _LaborFactory(object):
     #----------------------------------------------------------------------
     def gen_labor_name(self):
         """"""
-        return 'labor-{index}_starttime:{ts}'.format(index=self.count, 
-                                                     ts=int(time.time()))
+        return 'labor-starttime:{ts}'.format(index=self.count, 
+                                                     ts=int(time.time()*100))
 
 
 
@@ -395,12 +445,6 @@ class _ThreadTeam(object):
         self._factory = factory
 
         self._labors = []
-
-        #
-        # selected labor lock
-        #
-        self._selected_labor_lock = threading.Lock()
-        self._selected_labor = []
 
     #----------------------------------------------------------------------
     @property    
@@ -467,21 +511,23 @@ class _ThreadTeam(object):
     #----------------------------------------------------------------------
     def select(self):
         """"""
-        _idle_labors = filter(lambda x: not x.busy, self.labors)
+        _idle_labors = filter(lambda x: not x.inuse, self.labors)
 
         if _idle_labors == []:
             return None
         else:
+            
             labor = random.choice(_idle_labors)
-            while labor in self._selected_labor:
-                labor = random.choice(_idle_labors)
+            labor.inuse = True
+            #while labor in self._selected_labor:
+                #labor = random.choice(_idle_labors)
 
-            self._selected_labor_lock.acquire()
-            if labor in self._selected_labor:
-                pass
-            else:
-                self._selected_labor.append(labor)
-            self._selected_labor_lock.release()
+            #self._selected_labor_lock.acquire()
+            #if labor in self._selected_labor:
+                #pass
+            #else:
+                #self._selected_labor.append(labor)
+            #self._selected_labor_lock.release()
             return labor
 
     #----------------------------------------------------------------------
@@ -490,9 +536,9 @@ class _ThreadTeam(object):
         #
         # sync selected labor
         #
-        self._selected_labor_lock.acquire()
-        self._selected_labor.remove(labor)
-        self._selected_labor_lock.release()
+        #self._selected_labor_lock.acquire()
+        #self._selected_labor.remove(labor)
+        #self._selected_labor_lock.release()
 
 
 
@@ -567,6 +613,9 @@ class ThreadPoolX(object):
             return _ret
 
         self._dispatcher = _dispatcher_factory()
+        
+        
+        self._temp_factory = _LaborFactory(debug, loop_interval)
 
     #
     # set callback
@@ -666,10 +715,11 @@ class ThreadPoolX(object):
             except queue.Empty:
                 _task = None
 
-            if _task:
+            if _task != None:
+                print("******")
                 _labor.execute(*_task)
 
-            self._team.release_labor(_labor)
+            #self._team.release_labor(_labor)
         else:
             pass
 
@@ -696,9 +746,10 @@ class ThreadPoolX(object):
         """"""
         assert callable(target), 'target function cannot be executed'
 
-        _temp_labor = self._team.add()
+        _temp_labor = self._temp_factory.build_labor()
         _temp_labor.execute_with_callback(target, vargs, kwargs, callback,
                                           callback_exc, error_callback)
+        _temp_labor.start()
 
     #----------------------------------------------------------------------
     def feed_with_callback_chain(self, target, vargs=tuple(), kwargs={},
@@ -706,8 +757,10 @@ class ThreadPoolX(object):
         """"""
         assert callable(target), 'target function cannot be executed'
 
-        _temp_labor = self._team.add()
+        _temp_labor = self._temp_factory.build_labor()
         _temp_labor.execute_with_callback_chains(target, vargs, kwargs,
                                                  callback_chain=callback_chain, 
                                                  error_callback_chains=error_callback_chain)
+        _temp_labor.start()
 
+ 

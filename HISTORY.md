@@ -1,3 +1,6 @@
+###Version: 0.5.2
+修复 bug
+
 ###Version: 0.5.0
 增加 ThreadPoolX 一个以回调为基础的更加强大的线程池，修复一个 queue 的依赖问题
 

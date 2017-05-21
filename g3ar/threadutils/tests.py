@@ -24,6 +24,7 @@ def test_task(arg1, arg2=4):
     time.sleep(3)
     return arg1, arg2
 
+count = 0
 
 ########################################################################
 class ThreadPoolExTester(unittest.TestCase):
@@ -64,16 +65,34 @@ class ThreadPoolExTester(unittest.TestCase):
         """"""
         quited = False
         def print_result(result):
-            if result[0] == 5:
-                print('prepared exiting')
-                time.sleep(1)
-                print('quit!')
-                quited = True
+            time.sleep(1)
             print result
+            #_q.put(1)
+            return result
+        
+        
+        _q = queue.Queue()
+        def _count(result):
+            #_q.put(1)
+            return result
+        
+        #----------------------------------------------------------------------
+        def test_task1(arg1, arg2=4):
+            """"""
+            time.sleep(3)
+            _q.put(1)
+            return arg1, arg2
+        
+        
         pool = ThreadPoolX()
         pool.add_callbacks(callback=print_result)
-        for i in range(16):
-            pool.feed(target=test_task, vargs=(i,))
+        pool.add_callbacks(callback=_count)
+        
+        for i in range(50):
+            print(i)
+            pool.feed(target=test_task1, vargs=(i,))
+        
+        assert pool._task_queue.qsize() == 50
         pool.start()
 
         def target():
@@ -86,6 +105,12 @@ class ThreadPoolExTester(unittest.TestCase):
 
         pool.feed_with_callback(target, callback=anothor_result)
         time.sleep(6)
+        time.sleep(6)
+        #pool.quit()
+        
+        self.assertEqual(_q.qsize(),50)
+        
+        
         pool.quit()
 
     #----------------------------------------------------------------------
