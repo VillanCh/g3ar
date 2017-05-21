@@ -716,7 +716,7 @@ class ThreadPoolX(object):
                 _task = None
 
             if _task != None:
-                print("******")
+                #print("******")
                 _labor.execute(*_task)
 
             #self._team.release_labor(_labor)
