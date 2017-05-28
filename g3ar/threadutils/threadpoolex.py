@@ -718,6 +718,8 @@ class ThreadPoolX(object):
             if _task != None:
                 #print("******")
                 _labor.execute(*_task)
+            else:
+                _labor.inuse = False
 
             #self._team.release_labor(_labor)
         else:

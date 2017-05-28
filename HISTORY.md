@@ -1,3 +1,6 @@
+###Version: 0.5.5
+修复线程池 inuse 的小问题
+
 ###Version: 0.5.3
 删除多余 DEBUG IO
 
