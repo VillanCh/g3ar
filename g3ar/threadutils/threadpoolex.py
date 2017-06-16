@@ -505,8 +505,13 @@ class _ThreadTeam(object):
         #
         for i in self.labors:
             i.quit()
-            i.join()
-            assert not i.is_alive()
+            try:
+                i.join()
+            except:
+                pass
+            
+            while i.is_alive():
+                pass
 
     #----------------------------------------------------------------------
     def select(self):

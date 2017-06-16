@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: g3ar
-Version: 0.5.6
+Version: 0.5.7
 Summary: Python Coding Toolkit for Pentester.
 Home-page: https://github.com/VillanCh/g3ar
 Author: v1ll4n
@@ -344,7 +344,7 @@ Description: # g3ar 渗透编程工具包： 极速打造渗透测试工具
         如果返回了多个结果，就会出现多个 dict，因为在我们的任务可能不是 return ，还有可能是 yield。
         
         
-        ###Version: 0.5.6
+        ###Version: 0.5.7
         修复线程池ex不能安全退出的小问题
         
         ###Version: 0.5.5
