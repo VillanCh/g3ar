@@ -671,8 +671,9 @@ class ThreadPoolX(object):
     def quit(self):
         """"""
         self.started = False
-        self.join()
-        assert not self._dispatcher.is_alive()
+        #self.join()
+        while self._dispatcher.is_alive():
+            pass
         print('Existed ThreadPool MainLoop(Dispatcher!)')
         self._team.quitall()
         print('Quit All Labor!')
